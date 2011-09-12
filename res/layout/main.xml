@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*	Copyright 2011 Alexander Bunkenburg alex@inspiracio.com
+ * 
+ * This file is part of Complex Calculator for Android.
+ * 
+ * Complex Calculator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Complex Calculator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Complex Calculator for Android. If not, see <http://www.gnu.org/licenses/>.
+ * */
+-->
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+>
+	<LinearLayout android:layout_height="wrap_content" android:id="@+id/buttonPanel" android:layout_width="fill_parent">
+    	<ToggleButton android:text="ToggleButton" android:id="@+id/toggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></ToggleButton>
+    	<Button android:text="Button" android:id="@+id/resetButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+    	<Button android:text="Button" android:id="@+id/clearButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+	</LinearLayout>
+
+	<View android:id="@+id/canvas" android:layout_width="wrap_content" android:layout_height="wrap_content"></View>
+	<EditText android:layout_height="wrap_content" android:id="@+id/display" android:layout_width="fill_parent"></EditText>
+</LinearLayout>

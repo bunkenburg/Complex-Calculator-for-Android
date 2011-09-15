@@ -18,18 +18,41 @@
  * along with Complex Calculator for Android. If not, see <http://www.gnu.org/licenses/>.
  * */
 -->
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical"
 >
-	<LinearLayout android:layout_height="wrap_content" android:id="@+id/buttonPanel" android:layout_width="fill_parent">
-    	<ToggleButton android:text="ToggleButton" android:id="@+id/toggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></ToggleButton>
-    	<Button android:text="Button" android:id="@+id/resetButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-    	<Button android:text="Button" android:id="@+id/clearButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:id="@+id/buttonPanel" android:layout_width="fill_parent"
+		android:layout_alignParentTop="true"
+	>
+		<ToggleButton android:text="Sphere" android:id="@+id/toggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></ToggleButton>
+		<Button android:text="Reset" android:id="@+id/resetButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+		<Button android:text="Clear" android:id="@+id/clearButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 	</LinearLayout>
 
-	<View android:id="@+id/canvas" android:layout_width="wrap_content" android:layout_height="wrap_content"></View>
-	<EditText android:layout_height="wrap_content" android:id="@+id/display" android:layout_width="fill_parent"></EditText>
-</LinearLayout>
+	<!--Could also use:
+		android:inputMethod which input method to use
+		android:scrollHorizontally="true"
+		android:imeActionLabel="=" Seems to disable key 
+		android:digits=" !sinhcoshtanhconjoppReImlnexp^modargiepi()789*/456+-123=0.z"
+	-->
+	<EditText
+		android:id="@+id/display" 
+		android:layout_height="wrap_content" 
+		android:layout_width="fill_parent" 
+		android:layout_alignParentBottom="true"
+		android:inputType="text|textNoSuggestions|textAutoComplete"
+	/>
+
+	<inspiracio.calculator.Plane
+		android:id="@+id/canvas" 
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent" 
+		android:layout_below="@id/buttonPanel"
+		android:layout_above="@id/display"
+	/>
+</RelativeLayout>

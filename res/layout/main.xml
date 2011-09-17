@@ -29,7 +29,7 @@
 		android:id="@+id/buttonPanel" android:layout_width="fill_parent"
 		android:layout_alignParentTop="true"
 	>
-		<ToggleButton android:text="Sphere" android:id="@+id/toggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></ToggleButton>
+		<!--ToggleButton android:text="Sphere" android:id="@+id/toggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></ToggleButton-->
 		<Button android:text="Reset" android:id="@+id/resetButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 		<Button android:text="Clear" android:id="@+id/clearButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 	</LinearLayout>

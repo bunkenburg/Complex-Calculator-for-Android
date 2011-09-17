@@ -383,30 +383,42 @@ public final class EC{
         if(isZero())
             return INFINITY;
         else
-            return mkPolar(1.0D / mod(), arg() + 3.1415926535897931D);
+            return mkPolar(1.0D / mod(), arg() + Math.PI);
     }
 
-    public EC power(EC ec)throws PartialException{
-        if(isZero())
-            if(ec.isZero())
+    /** Raises this number to the power of another, x^y.
+     * This is x.
+     * @param y */
+    public EC power(EC y)throws PartialException{
+    	EC x=this;
+        if(x.isZero())
+        	// 0^0 = undefined
+            if(y.isZero())
                 throw new PartialException("EC.power(0,0)");
+        	// 0^y = 0
             else
                 return ZERO;
-        if(finite()) {
-            if(ec.isZero())
+        if(x.finite()) {
+        	// x^0 = 1
+            if(y.isZero())
                 return ONE;
-            if(ec.finite()){
-                double d = Math.log(mod());
-                double d1 = Math.atan2(im(), re());
-                double d2 = Math.exp(d * ec.re() - ec.im() * d1);
-                d1 = ec.im() * d + ec.re() * d1;
-                return mkPolar(d2, d1);
-            } else{
-                return INFINITY;
+            if(y.finite()){									// x^y
+                double mx=Math.log(x.mod());				// ln(mod(x))
+                double ax=Math.atan2(x.im(),x.re());		// angle(x). Angle(-1) should be pi, not -pi. I want -pi < ax <= pi.
+                if(ax==-Math.PI)
+                	ax=Math.PI;								//Prefer pi over -pi
+                double mr=Math.exp(mx*y.re() - y.im()*ax);	// mod(x^y) = e^(mod(x)*re(y) - angle(x)*im(y)) 
+                double ar= y.im() * mx + y.re() * ax;		// angle(x^y) = im(y)*mod(x) + re(y)*angle(x)
+                return mkPolar(mr, ar);
             }
+            // x^inf = inf
+            else
+                return INFINITY;
         }
-        if(ec.isZero())
+        // inf^0 = undefined
+        if(y.isZero())
             throw new PartialException("EC.power(inf, 0)");
+        // inf^y = inf
         else
             return INFINITY;
     }

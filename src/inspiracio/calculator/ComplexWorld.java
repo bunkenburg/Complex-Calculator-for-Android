@@ -54,7 +54,7 @@ public final class ComplexWorld extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        WorldRepresentation canvas=(WorldRepresentation)this.findViewById(R.id.canvas);
+        //WorldRepresentation canvas=(WorldRepresentation)this.findViewById(R.id.canvas);
         
         this.display=(EditText)this.findViewById(R.id.display);
         display.setOnKeyListener(new OnKeyListener(){

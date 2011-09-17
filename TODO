@@ -1,0 +1,15 @@
+Release 1.00:
+
+* Calculation mode: put result on the plane
+* plane: reset
+* plane: clear
+* plane: swipe for scroll
+* plane: touch for selecting a number
+* display: erase old "=" and result
+* Input method service with a good keyboard for mathematics
+
+Release 2.0:
+
+* z -> f(z) mode
+* z -> |f(z)| mode
+* x -> f(z) mode

@@ -126,7 +126,8 @@ final class Drawing{
      * @param polygon The polygon to fill.
      * @param colour In this colour.
      * */
-    void fill(Polygon polygon, int colour){
+    final void fill(Polygon polygon, int colour){
+    	//I can't get this to work. It only draws the strokes. For now, I rely on colour.
     	int oldColor=paint.getColor();
     	Style oldStyle=paint.getStyle();
     	
@@ -134,6 +135,7 @@ final class Drawing{
     	paint.setStyle(Paint.Style.FILL_AND_STROKE);
     	
         Path path = new Path();
+        path.setFillType(Path.FillType.EVEN_ODD);
         for(int i=0; i<polygon.npoints-1; i++){
             path.moveTo(polygon.xpoints[i], polygon.ypoints[i]);
             path.lineTo(polygon.xpoints[i+1], polygon.ypoints[i+1]);
@@ -141,7 +143,10 @@ final class Drawing{
         path.moveTo(polygon.xpoints[polygon.npoints-1], polygon.ypoints[polygon.npoints-1]);
         path.lineTo(polygon.xpoints[0], polygon.ypoints[0]);
         path.close();
-        
+
+        paint.setStyle(Paint.Style.STROKE);
+        canvas.drawPath(path, paint);
+        paint.setStyle(Paint.Style.FILL);
         canvas.drawPath(path, paint);
 
         paint.setColor(oldColor);

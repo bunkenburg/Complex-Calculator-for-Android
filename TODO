@@ -1,10 +1,9 @@
 Release 1.00:
 
-* Calculation mode: put result on the plane
-* plane: reset
-* plane: clear
 * plane: swipe for scroll
 * plane: touch for selecting a number
+* plane: reset
+* plane: clear
 * display: erase old "=" and result
 * Input method service with a good keyboard for mathematics
 
@@ -13,3 +12,15 @@ Release 2.0:
 * z -> f(z) mode
 * z -> |f(z)| mode
 * x -> f(z) mode
+
+BUGS:
+
+* When going into landscape, plane loses 1+i.
+
+TODO:
+
+* I can't draw a filled triangle. Axes of plane.
+
+DONE:
+
+* Calculation mode: put result on the plane

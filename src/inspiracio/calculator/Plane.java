@@ -6,6 +6,11 @@ import inspiracio.numbers.ECList;
 import inspiracio.numbers.Line;
 import inspiracio.numbers.Piclet;
 import inspiracio.numbers.Rectangle;
+import static inspiracio.calculator.Polygon.Direction.*;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,15 +22,26 @@ import android.view.MotionEvent;
 /** The complex plane */
 final class Plane extends WorldRepresentation{
 
+	/** Pixel distance between the axis tips and the border of the view. */
     private static int AXISSPACE = 30;
+    
+    /** Approximate pixel distance between the marks on the axes. */
     private static int AXISMARKING = 40;
+    
+    /** Approximate height of the font, to draw axis labels slightly below the x-axis. */
     private static int FONTHEIGHT = 10;
+    
+    /** Size of the triangles at the end of the axes. */
     private static int TRIANGLESIZE = 5;
+    
+    /** Length of the we marks on the axes. */
     private static int MARKLENGTH = 2;
 
     //State -------------------------------------------------
     
+    /** The number 1 is how many pixels? */
     private double ScaleFactor = 40D;
+    
     private double CenterReal;
     private double CenterImaginary;
     private double TopImaginary;
@@ -39,17 +55,22 @@ final class Plane extends WorldRepresentation{
     private double MaxReal;
     private double MinReal;
 
+    /** The numbers that are currently displayed. */
+    private Set<EC>numbers=new HashSet<EC>();
+    
     //Constructors ------------------------------------------
 	
 	/** Constructor for inflation */
 	public Plane(Context ctx, AttributeSet ats){
 		super(ctx, ats);
+		this.setBackgroundColor(Color.WHITE);//this also here, so that it applies also in XML editing in Eclipse
 	}
 	
 	//View methods ------------------------------------------------
 	
 	/** Draw the world. */
 	@Override protected void onDraw(Canvas canvas){
+		//Get ready
 		this.setBackgroundColor(Color.WHITE);
 		int height=this.getHeight();
 		int width=this.getWidth();
@@ -59,6 +80,7 @@ final class Plane extends WorldRepresentation{
 		paint.setColor(Color.BLUE);
         Drawing drawing = new Drawing(canvas, paint);
 		
+        //Some points please
 		Point point = new Point();
         Point point1 = new Point();
         Point point2 = new Point();
@@ -94,14 +116,14 @@ final class Plane extends WorldRepresentation{
         cartesian2Point(d3, d2, point);
         cartesian2Point(d4, d2, point1);
         drawing.drawLine(point, point1, Color.LTGRAY);
-        Polygon polygon = Polygon.mkTriangle(point1, Polygon.Direction.EAST, TRIANGLESIZE);
+        Polygon polygon = Polygon.mkTriangle(point1, EAST, TRIANGLESIZE);
         drawing.draw(polygon);
         if(RightReal <= MaxReal)
-            drawing.fill(polygon, Color.BLACK);
-        polygon = Polygon.mkTriangle(point, Polygon.Direction.WEST, TRIANGLESIZE);
+            drawing.fill(polygon, Color.RED);
+        polygon = Polygon.mkTriangle(point, WEST, TRIANGLESIZE);
         drawing.draw(polygon);
         if(MinReal <= LeftReal)
-            drawing.fill(polygon, Color.BLACK);
+            drawing.fill(polygon, Color.RED);
         int j = point2.y;
         double d7 = Math.ceil(d3 / d);
         d3 = d7 * d;
@@ -117,14 +139,14 @@ final class Plane extends WorldRepresentation{
         cartesian2Point(d1, d5, point);
         cartesian2Point(d1, d6, point1);
         drawing.drawLine(point, point1, Color.LTGRAY);
-        polygon = Polygon.mkTriangle(point1, Polygon.Direction.NORTH, TRIANGLESIZE);
+        polygon = Polygon.mkTriangle(point1, NORTH, TRIANGLESIZE);
         drawing.draw(polygon);
         if(TopImaginary <= MaxImaginary)
-            drawing.fill(polygon, Color.BLACK);
-        polygon = Polygon.mkTriangle(point, Polygon.Direction.SOUTH, TRIANGLESIZE);
+            drawing.fill(polygon, Color.RED);
+        polygon = Polygon.mkTriangle(point, SOUTH, TRIANGLESIZE);
         drawing.draw(polygon);
         if(MinImaginary <= BottomImaginary)
-            drawing.fill(polygon, Color.BLACK);
+            drawing.fill(polygon, Color.RED);
         i = point2.x;
         d7 = Math.ceil(d5 / d);
         d5 = d7 * d;
@@ -137,6 +159,10 @@ final class Plane extends WorldRepresentation{
             }
             d5 += d;
         }
+        
+        //Draws the numbers we are currently showing
+        this.add(EC.mkCartesian(10, 1));
+        this.drawStuff(drawing);
 	}
 
 	/** Called when the size of the view has changed. */
@@ -146,25 +172,49 @@ final class Plane extends WorldRepresentation{
 	
 	/** Called when a touch event occurs. */
 	@Override public boolean onTouchEvent(MotionEvent e){
+		System.out.println(e);
 		return false;
 	}
 	
 	//Business methods ----------------------------------------------
 
+	/** Adds a number to be displayed in the world. */
+	@Override void add(EC c){
+		this.updateExtremes(c);
+		this.numbers.add(c);
+		this.invalidate();
+	}
+
+	/** Clears all displayed numbers and stuff. */
+	@Override void clear(){
+		this.numbers.clear();
+		this.invalidate();
+	}
+	
+
 	/** Resets to centre on zero. */
-    void reset(){
+    @Override void reset(){
         CenterReal = 0.0D;
         CenterImaginary = 0.0D;
+		this.invalidate();
     }
 
     /** Shift the image by some pixel distance. */
     void shift(int i, int j){
         CenterImaginary -= Pix2Math(j);
         CenterReal += Pix2Math(i);
+		this.invalidate();
     }
 
-    void zoomIn(){ScaleFactor *= 2D;}
-    void zoomOut(){ScaleFactor /= 2D;}
+    void zoomIn(){
+    	ScaleFactor *= 2D;
+    	this.invalidate();
+    }
+
+    void zoomOut(){
+    	ScaleFactor /= 2D;
+    	this.invalidate();
+    }
 
 	//Converters ----------------------------------------------------
 	
@@ -230,9 +280,8 @@ final class Plane extends WorldRepresentation{
     //Drawing methods ------------------------------------------------
     
     /** Draws a complex number. */
-    @SuppressWarnings("unused")
 	private void drawComplex(Drawing drawing, EC ec){
-        if(ec.finite()){
+        if(ec.isFinite()){
             drawing.cross((int)((ec.re() - LeftReal) * ScaleFactor), -(int)((ec.im() - TopImaginary) * ScaleFactor), MARKLENGTH);
             drawing.move(2, 2);
             drawing.draw(ec.toString());
@@ -277,6 +326,12 @@ final class Plane extends WorldRepresentation{
         }
     }
 
+    /** Draws the stuff that the plane should show: just the current numbers. */
+    @Override void drawStuff(Drawing drawing){
+        for(EC c : this.numbers)
+            this.drawComplex(drawing, c);
+    }
+
     /** Draws a line to a number. */
     private void lineTo(Drawing drawing, EC ec){
         drawing.lineTo((int)((ec.re() - LeftReal) * ScaleFactor), -(int)((ec.im() - TopImaginary) * ScaleFactor));
@@ -285,6 +340,17 @@ final class Plane extends WorldRepresentation{
     /** Moves to a number. */
     private void moveTo(Drawing drawing, EC ec){
         drawing.moveTo((int)((ec.re() - LeftReal) * ScaleFactor), -(int)((ec.im() - TopImaginary) * ScaleFactor));
+    }
+
+    //Helpers that maintain the state ---------------------------------------------------
+    
+    protected void updateExtremes(EC ec){
+        if(ec.isFinite()){
+            MaxImaginary = Math.max(MaxImaginary, ec.im());
+            MinImaginary = Math.min(MinImaginary, ec.im());
+            MaxReal = Math.max(MaxReal, ec.re());
+            MinReal = Math.min(MinReal, ec.re());
+        }
     }
 
 }

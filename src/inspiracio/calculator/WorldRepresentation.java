@@ -1,5 +1,6 @@
 package inspiracio.calculator;
 
+import inspiracio.numbers.EC;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -28,6 +29,18 @@ abstract class WorldRepresentation extends View{
 	
 	//Methods ---------------------------------------------------------------------------
 
-	//Helpers --------------------------------------------------------------------------
+	/** Adds a number to be displayed in the world. */
+	abstract void add(EC c);
+	
+	/** Clears all displayed numbers and stuff. */
+	abstract void clear();
+	
+    /** Draws the stuff that the world should show. */
+    abstract void drawStuff(Drawing drawing);
+
+	/** Resets to centre on zero. */
+    abstract void reset();
+    
+    //Helpers --------------------------------------------------------------------------
 	
 }

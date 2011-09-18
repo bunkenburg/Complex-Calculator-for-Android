@@ -21,71 +21,66 @@ package inspiracio.numbers;
 // Referenced classes of package bunkenba.numbers:
 //            Piclet, EC, ECList, PartialException
 
-public class Circle extends Piclet
-{
+public final class Circle extends Piclet{
 
-    public Circle(EC ec, double d)
-    {
-        if(ec.finite())
+	//State -----------------------------------------------------------
+	
+    public EC center;
+    public double radius;
+	
+	//Constructors ----------------------------------------------------
+	
+    public Circle(EC ec, double d){
+        if(ec.isFinite())
             center = ec;
         else
             center = EC.ZERO;
         radius = d;
     }
 
-    public Circle(EC ec, EC ec1)
-    {
-        if(ec.finite())
+    public Circle(EC ec, EC ec1){
+        if(ec.isFinite())
             center = ec;
         else
             center = EC.ZERO;
-        if(ec1.finite())
+        if(ec1.isFinite())
         {
             radius = center.distance(ec1);
             return;
-        } else
-        {
+        } else{
             radius = (1.0D / 0.0D);
             return;
         }
     }
 
-    public double top()
-    {
+    //Methods --------------------------------------------------------------
+    
+    public double top(){
         return center.im() + radius;
     }
 
-    public double bottom()
-    {
+    public double bottom(){
         return center.im() - radius;
     }
 
-    public double left()
-    {
+    public double left(){
         return center.re() - radius;
     }
 
-    public double right()
-    {
+    public double right(){
         return center.re() + radius;
     }
 
-    protected void sample()
-    {
+    protected void sample(){
         double d = 0.20943951023931953D;
         double d1 = 0.0D;
-        for(int i = 0; i <= 30; i++)
-        {
-            try
-            {
+        for(int i = 0; i <= 30; i++){
+            try{
                 super.samples = new ECList(center.add(EC.mkPolar(radius, d1)), super.samples);
             }
             catch(PartialException _ex) { }
             d1 += d;
         }
-
     }
 
-    public EC center;
-    public double radius;
 }

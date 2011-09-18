@@ -33,6 +33,7 @@ import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.widget.Button;
 import android.widget.EditText;
 
 /** The activity for calculation. */
@@ -40,6 +41,15 @@ public final class ComplexWorld extends Activity{
 
 	//State -----------------------------------------------------------------------
 	
+	/** Button for resetting, that is re-centering the plane. */
+	private Button resetButton;
+	
+	/** Button for clearing, that is deleting all the shown numbers. */
+	private Button clearButton;
+	
+	/** The world where the numbers are displayed graphically. */
+	private WorldRepresentation world;
+
 	/** The text box where the expression is displayed. */
 	private EditText display;
 	
@@ -52,9 +62,19 @@ public final class ComplexWorld extends Activity{
     /** Called when the activity is first created. */
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        this.setContentView(R.layout.main);
         
-        //WorldRepresentation canvas=(WorldRepresentation)this.findViewById(R.id.canvas);
+        this.resetButton=(Button)this.findViewById(R.id.resetButton);
+        this.resetButton.setOnClickListener(new View.OnClickListener(){
+			@Override public void onClick(View v){world.reset();}
+		});
+        
+        this.clearButton=(Button)this.findViewById(R.id.clearButton);
+        this.clearButton.setOnClickListener(new View.OnClickListener(){
+			@Override public void onClick(View v){world.clear();}
+		});
+        
+        this.world=(WorldRepresentation)this.findViewById(R.id.canvas);
         
         this.display=(EditText)this.findViewById(R.id.display);
         display.setOnKeyListener(new OnKeyListener(){
@@ -85,7 +105,8 @@ public final class ComplexWorld extends Activity{
             SyntaxTree tree=SyntaxTree.parse(s);
             EC ec=tree.evaluate(null);
             display.append(ec.toString());
-            //cW.add(ec);
+            if(this.world!=null)
+            	world.add(ec);
             return;
         }catch(BugException bugexception){
         	bugexception.printStackTrace();

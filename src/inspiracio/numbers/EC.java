@@ -26,13 +26,15 @@ import java.text.NumberFormat;
 // Referenced classes of package bunkenba.numbers:
 //            Borrow, PartialException
 
+/** The Extended Complex numbers: that is, complex numbers and one infinity. 
+ * Instances of EC are immutable. 
+ * */
 public final class EC{
 
+	//Constants ------------------------------------------------------------
+	
     private static final String piString ="\u03C0";
     private static final String infinityString ="\u221E";// "inf";
-    private static boolean argContinuous;
-    private static int k;
-    private static int lastQuad;
     public static final EC E = mkReal(2.7182818284590451D);
     public static final EC HALF = mkReal(0.5D);
     //private static final EC HALFPI = mkReal(1.5707963267948966D);
@@ -49,13 +51,16 @@ public final class EC{
     //private static final EC TWO = mkReal(2D);
     //private static final EC TWOPI = mkReal(6.2831853071795862D);
     public static final EC ZERO = mkReal(0.0D);
+    
+    //Static state: affects continuous mapping z -> f(z) and some settings. ------------
+
+    private static boolean argContinuous;
+    private static int k;
+    private static int lastQuad;
     private static int PRECISION;
     private static double EPSILON;
     private static NumberFormat nf;
-    private final boolean finite;
-    private final double real;
-    private final double imag;
-
+    
     static{
         PRECISION = 4;
         EPSILON = Math.pow(10D, -PRECISION);
@@ -64,6 +69,19 @@ public final class EC{
         nf.setMaximumFractionDigits(10);
     }
 
+    //State ----------------------------------------------------------------
+
+    /** Is the number finite? */
+    private final boolean finite;
+    
+    /** Real part of the number */
+    private final double real;
+    
+    /** Imaginary part of the number */
+    private final double imag;
+
+    //Settings -------------------------------------------------------------
+    
     public static void setPrecision(int np){
     	int op=PRECISION;
         PRECISION = np;
@@ -134,7 +152,7 @@ public final class EC{
     }
 
     private double arg(){
-        if(finite() && !isZero()){
+        if(isFinite() && !isZero()){
             double d = Math.atan2(im(), re());
             if(argContinuous){
                 int i = quadrant();
@@ -158,11 +176,11 @@ public final class EC{
 
     public EC add(EC ec)throws PartialException{
         if(finite)
-            if(ec.finite())
+            if(ec.isFinite())
                 return mkCartesian(re() + ec.re(), im() + ec.im());
             else
                 return INFINITY;
-        if(ec.finite())
+        if(ec.isFinite())
             return INFINITY;
         else
             throw new PartialException("EC.add(EC): inf+inf");
@@ -185,7 +203,7 @@ public final class EC{
 
     public EC cos()throws PartialException{
         EC ec = null;
-        if(finite())
+        if(isFinite())
             try{
                 EC ec1 = multiply(I);
                 ec = HALF.multiply(ec1.exp().add(ec1.negate().exp()));
@@ -198,7 +216,7 @@ public final class EC{
 
     public EC cosh()throws PartialException{
         EC ec = ZERO;
-        if(finite())
+        if(isFinite())
             try{
                 ec = HALF.multiply(exp().add(negate().exp()));
             }
@@ -232,15 +250,15 @@ public final class EC{
         if(isZero()){
             if(ec.isZero())
                 throw new PartialException("EC.divide: 0/0");
-            if(ec.finite())
+            if(ec.isFinite())
                 ec1 = ZERO;
             else
                 throw new PartialException("EC.divide: 0/inf");
-        } else if(finite()){
+        } else if(isFinite()){
             if(ec.isZero())
                 ec1 = INFINITY;
             else
-            if(ec.finite()){
+            if(ec.isFinite()){
                 double ad[] = Borrow.div(re(), im(), ec.re(), ec.im());
                 ec1 = mkCartesian(ad[0], ad[1]);
             } else{
@@ -249,7 +267,7 @@ public final class EC{
         } else{
             if(ec.isZero())
                 throw new PartialException("EC.divide: inf/0");
-            if(ec.finite())
+            if(ec.isFinite())
                 ec1 = INFINITY;
             else
                 throw new PartialException("EC.divide: inf/inf");
@@ -264,9 +282,9 @@ public final class EC{
     }
 
     public boolean equals(EC ec){
-        if(!finite() && !ec.finite())
+        if(!isFinite() && !ec.isFinite())
             return true;
-        if(finite() || ec.finite())
+        if(isFinite() || ec.isFinite())
             return false;
         return Double.doubleToLongBits(re()) == Double.doubleToLongBits(ec.re()) && Double.doubleToLongBits(im()) == Double.doubleToLongBits(ec.im());
     }
@@ -294,7 +312,8 @@ public final class EC{
         }
     }
 
-    public boolean finite(){return finite;}
+    /** Is the number finite? */
+    public final boolean isFinite(){return finite;}
 
     public double im(){return imag;}
 
@@ -310,7 +329,7 @@ public final class EC{
     }
 
     public EC ln()throws PartialException{
-        if(finite()){
+        if(isFinite()){
             if(isZero())
                 throw new PartialException("EC.ln(0)");
             else
@@ -334,7 +353,7 @@ public final class EC{
 
     public double mod(){
         double d;
-        if(finite())
+        if(isFinite())
             d = Math.sqrt(sqr(re()) + sqr(im()));
         else
             d = (1.0D / 0.0D);
@@ -351,14 +370,14 @@ public final class EC{
     public EC multiply(EC ec)throws PartialException{
         EC ec1;
         if(isZero()){
-            if(ec.finite())
+            if(ec.isFinite())
                 ec1 = ZERO;
             else
                 throw new PartialException("EC.multiply: 0*inf");
-        } else if(finite()){
+        } else if(isFinite()){
             if(ec.isZero())
                 ec1 = ZERO;
-            else if(ec.finite())
+            else if(ec.isFinite())
                 ec1 = mkCartesian(re() * ec.re() - im() * ec.im(), re() * ec.im() + ec.re() * im());
             else
                 ec1 = INFINITY;
@@ -378,7 +397,7 @@ public final class EC{
     }
 
     public EC opp(){
-        if(!finite())
+        if(!isFinite())
             return ZERO;
         if(isZero())
             return INFINITY;
@@ -398,11 +417,11 @@ public final class EC{
         	// 0^y = 0
             else
                 return ZERO;
-        if(x.finite()) {
+        if(x.isFinite()) {
         	// x^0 = 1
             if(y.isZero())
                 return ONE;
-            if(y.finite()){									// x^y
+            if(y.isFinite()){									// x^y
                 double mx=Math.log(x.mod());				// ln(mod(x))
                 double ax=Math.atan2(x.im(),x.re());		// angle(x). Angle(-1) should be pi, not -pi. I want -pi < ax <= pi.
                 if(ax==-Math.PI)
@@ -440,7 +459,7 @@ public final class EC{
     public EC reciprocal(){
         if(isZero())
             return INFINITY;
-        if(!finite())
+        if(!isFinite())
             return ZERO;
         else
             return mkPolar(1.0D / mod(), arg() + Math.PI);
@@ -457,7 +476,7 @@ public final class EC{
 
     public EC sin()throws PartialException{
         EC ec = ZERO;
-        if(finite())
+        if(isFinite())
             try{
                 EC ec1 = multiply(I);
                 ec = NEGHALFI.multiply(ec1.exp().subtract(ec1.negate().exp()));
@@ -470,7 +489,7 @@ public final class EC{
 
     public EC sinh()throws PartialException{
         EC ec = ZERO;
-        if(finite())
+        if(isFinite())
             try{
                 ec = HALF.multiply(exp().subtract(negate().exp()));
             }
@@ -483,7 +502,7 @@ public final class EC{
     public static final double sqr(double d){return d * d;}
 
     public EC sqrt(){
-        if(!finite())
+        if(!isFinite())
             return INFINITY;
         double d = mod();
         double d1;
@@ -504,11 +523,11 @@ public final class EC{
 
     public EC subtract(EC ec)throws PartialException{
         if(finite)
-            if(ec.finite())
+            if(ec.isFinite())
                 return mkCartesian(re() - ec.re(), im() - ec.im());
             else
                 return INFINITY;
-        if(ec.finite())
+        if(ec.isFinite())
             return INFINITY;
         else
             throw new PartialException("EC.subtract: inf-inf");
@@ -524,7 +543,7 @@ public final class EC{
 
     /** >Print it nicely. */
     @Override public String toString(){
-        if(finite()){
+        if(isFinite()){
             double re = re();
             double im = im();
             String s = toString(re);

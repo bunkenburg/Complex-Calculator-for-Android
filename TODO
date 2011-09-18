@@ -1,7 +1,7 @@
 Release 1.00:
 
+* Font size on display is very small
 * plane: swipe for scroll
-* plane: touch for selecting a number
 * plane: reset
 * plane: clear
 * display: erase old "=" and result
@@ -24,3 +24,4 @@ TODO:
 DONE:
 
 * Calculation mode: put result on the plane
+* plane: touch for selecting a number

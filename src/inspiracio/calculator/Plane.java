@@ -1,3 +1,20 @@
+/*	Copyright 2011 Alexander Bunkenburg alex@inspiracio.com
+ * 
+ * This file is part of Complex Calculator for Android.
+ * 
+ * Complex Calculator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Complex Calculator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Complex Calculator for Android. If not, see <http://www.gnu.org/licenses/>.
+ * */
 package inspiracio.calculator;
 
 import inspiracio.numbers.Circle;
@@ -23,19 +40,19 @@ import android.view.MotionEvent;
 final class Plane extends WorldRepresentation{
 
 	/** Pixel distance between the axis tips and the border of the view. */
-    private static int AXISSPACE = 30;
+    private static int AXISSPACE=30;//30
     
     /** Approximate pixel distance between the marks on the axes. */
-    private static int AXISMARKING = 40;
+    private static int AXISMARKING=40;//40
     
     /** Approximate height of the font, to draw axis labels slightly below the x-axis. */
-    private static int FONTHEIGHT = 10;
+    private static int FONTHEIGHT=10;//10
     
     /** Size of the triangles at the end of the axes. */
-    private static int TRIANGLESIZE = 5;
+    private static int TRIANGLESIZE=5;//5
     
     /** Length of the we marks on the axes. */
-    private static int MARKLENGTH = 2;
+    private static int MARKLENGTH=2;//2
 
     //State -------------------------------------------------
     
@@ -78,6 +95,9 @@ final class Plane extends WorldRepresentation{
 		//Create paintbrush
 		Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
 		paint.setColor(Color.BLUE);
+		//Text size: the default 12 is quite small. The display has 27 by default. Polishing needed.
+		//float textSize=paint.getTextSize();//12
+		//paint.setTextSize(2*textSize);
         Drawing drawing = new Drawing(canvas, paint);
 		
         //Some points please
@@ -86,20 +106,20 @@ final class Plane extends WorldRepresentation{
         Point point2 = new Point();
         
         //Find the limits of what's visible
-        TopImaginary = CenterImaginary + Pix2Math(height / 2);
-        BottomImaginary = CenterImaginary - Pix2Math(height / 2);
-        LeftReal = CenterReal - Pix2Math(width / 2);
-        RightReal = CenterReal + Pix2Math(width / 2);
+        TopImaginary = CenterImaginary + pix2Math(height / 2);
+        BottomImaginary = CenterImaginary - pix2Math(height / 2);
+        LeftReal = CenterReal - pix2Math(width / 2);
+        RightReal = CenterReal + pix2Math(width / 2);
                 
         //Draws the x axis.
-        double d = raiseSmooth(Pix2Math(AXISMARKING));
-        int l = Math2Pix(d);
+        double d = raiseSmooth(pix2Math(AXISMARKING));
+        int l = math2Pix(d);
         double d1 = 0.0D;
         double d2 = 0.0D;
-        double d3 = LeftReal + Pix2Math(AXISSPACE);
-        double d4 = RightReal - Pix2Math(AXISSPACE);
-        double d5 = BottomImaginary + Pix2Math(AXISSPACE);
-        double d6 = TopImaginary - Pix2Math(AXISSPACE);
+        double d3 = LeftReal + pix2Math(AXISSPACE);
+        double d4 = RightReal - pix2Math(AXISSPACE);
+        double d5 = BottomImaginary + pix2Math(AXISSPACE);
+        double d6 = TopImaginary - pix2Math(AXISSPACE);
         if(d3 <= 0.0D && d4 >= 0.0D)
             d1 = 0.0D;
         else if(d3 > 0.0D)
@@ -172,7 +192,15 @@ final class Plane extends WorldRepresentation{
 	
 	/** Called when a touch event occurs. */
 	@Override public boolean onTouchEvent(MotionEvent e){
-		System.out.println(e);
+		float x=e.getX();
+		float y=e.getY();
+		Point point=new Point();
+		point.x=(int)x;//rounds float to int
+		point.y=(int)y;
+		EC c=this.point2Complex(point);
+		this.add(c);
+		//Also need to send it to the display
+		this.calculator.add(c);
 		return false;
 	}
 	
@@ -201,8 +229,8 @@ final class Plane extends WorldRepresentation{
 
     /** Shift the image by some pixel distance. */
     void shift(int i, int j){
-        CenterImaginary -= Pix2Math(j);
-        CenterReal += Pix2Math(i);
+        CenterImaginary -= pix2Math(j);
+        CenterReal += pix2Math(i);
 		this.invalidate();
     }
 
@@ -228,18 +256,17 @@ final class Plane extends WorldRepresentation{
     }
 
     /** Converts a point to a number. */
-    @SuppressWarnings("unused")
-	private EC Point2Complex(Point point){
+	private EC point2Complex(Point point){
         return EC.mkCartesian(LeftReal + (double)point.x / ScaleFactor, TopImaginary - (double)point.y / ScaleFactor);
     }
 
     /** Converts pixel distance in mathematical distance between numbers. */
-    private double Pix2Math(int i){
+    private double pix2Math(int i){
         return (double)i / ScaleFactor;
     }
 
     /** Converts mathematical distance between numbers in pixel distance. */
-    private int Math2Pix(double d){
+    private int math2Pix(double d){
         return (int)(d * ScaleFactor);
     }
 
@@ -309,7 +336,7 @@ final class Plane extends WorldRepresentation{
         }
         if(piclet instanceof Circle){
             Circle circle = (Circle)piclet;
-            drawing.drawCircle((int)((circle.center.re() - LeftReal) * ScaleFactor), -(int)((circle.center.im() - TopImaginary) * ScaleFactor), Math2Pix(circle.radius));
+            drawing.drawCircle((int)((circle.center.re() - LeftReal) * ScaleFactor), -(int)((circle.center.im() - TopImaginary) * ScaleFactor), math2Pix(circle.radius));
             return;
         }
         if(piclet instanceof Rectangle){

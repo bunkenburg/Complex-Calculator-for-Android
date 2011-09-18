@@ -75,6 +75,7 @@ public final class ComplexWorld extends Activity{
 		});
         
         this.world=(WorldRepresentation)this.findViewById(R.id.canvas);
+        this.world.set(this);
         
         this.display=(EditText)this.findViewById(R.id.display);
         display.setOnKeyListener(new OnKeyListener(){
@@ -91,8 +92,19 @@ public final class ComplexWorld extends Activity{
                 return false;
             }
         });
+        //float t=display.getPaint().getTextSize();//27
     }
+
+    //Methods ----------------------------------------------------------------
     
+    /** Adds a complex number to the display. */
+    final void add(EC ec){
+    	int start=display.getSelectionStart();
+    	int end=display.getSelectionEnd();
+    	Editable editable=display.getEditableText();
+    	editable.replace(start, end, "(" + ec + ")");
+    }
+
     //Helpers ----------------------------------------------------------------
     
     /** Gets the expression from the display, parses it, evaluates it,

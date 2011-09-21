@@ -92,6 +92,7 @@ public final class ComplexWorld extends Activity{
                 return false;
             }
         });
+        //The text size of the display if 27.
         //float t=display.getPaint().getTextSize();//27
     }
 

@@ -43,21 +43,21 @@ final class Plane extends WorldRepresentation{
     private static int AXISSPACE=30;//30
     
     /** Approximate pixel distance between the marks on the axes. */
-    private static int AXISMARKING=40;//40
+    private static int AXISMARKING=60;//40
     
     /** Approximate height of the font, to draw axis labels slightly below the x-axis. */
-    private static int FONTHEIGHT=10;//10
+    private static int FONTHEIGHT=18;//10
     
     /** Size of the triangles at the end of the axes. */
-    private static int TRIANGLESIZE=5;//5
+    private static int TRIANGLESIZE=10;//5
     
     /** Length of the we marks on the axes. */
-    private static int MARKLENGTH=2;//2
+    private static int MARKLENGTH=4;//2
 
     //State -------------------------------------------------
     
     /** The number 1 is how many pixels? */
-    private double ScaleFactor = 40D;
+    private double ScaleFactor = 80;//40D;
     
     private double CenterReal;
     private double CenterImaginary;
@@ -97,7 +97,7 @@ final class Plane extends WorldRepresentation{
 		paint.setColor(Color.BLUE);
 		//Text size: the default 12 is quite small. The display has 27 by default. Polishing needed.
 		//float textSize=paint.getTextSize();//12
-		//paint.setTextSize(2*textSize);
+		paint.setTextSize(FONTHEIGHT);
         Drawing drawing = new Drawing(canvas, paint);
 		
         //Some points please

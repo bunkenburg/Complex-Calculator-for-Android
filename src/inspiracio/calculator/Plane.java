@@ -17,13 +17,19 @@
  * */
 package inspiracio.calculator;
 
+import static inspiracio.calculator.Polygon.Direction.EAST;
+import static inspiracio.calculator.Polygon.Direction.NORTH;
+import static inspiracio.calculator.Polygon.Direction.SOUTH;
+import static inspiracio.calculator.Polygon.Direction.WEST;
 import inspiracio.numbers.Circle;
 import inspiracio.numbers.EC;
 import inspiracio.numbers.ECList;
 import inspiracio.numbers.Line;
 import inspiracio.numbers.Piclet;
 import inspiracio.numbers.Rectangle;
-import static inspiracio.calculator.Polygon.Direction.*;
+import inspiracio.view.MouseEvent;
+import inspiracio.view.TouchAdapter;
+import inspiracio.view.TouchDispatcher;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -81,6 +87,24 @@ final class Plane extends WorldRepresentation{
 	public Plane(Context ctx, AttributeSet ats){
 		super(ctx, ats);
 		this.setBackgroundColor(Color.WHITE);//this also here, so that it applies also in XML editing in Eclipse
+		
+		//Touch events
+		TouchDispatcher dispatcher=new TouchDispatcher();
+		dispatcher.addTouchListener(new TouchAdapter(){
+			/** Users selects a number by clicking on it. */
+			@Override public void onClick(MouseEvent e){
+				float x=e.getX();
+				float y=e.getY();
+				Point point=new Point();
+				point.x=(int)x;//rounds float to int
+				point.y=(int)y;
+				EC c=point2Complex(point);
+				add(c);
+				//Also need to send it to the display
+				calculator.add(c);
+			}
+		});
+		this.setOnTouchListener(dispatcher);
 	}
 	
 	//View methods ------------------------------------------------
@@ -189,21 +213,7 @@ final class Plane extends WorldRepresentation{
 	@Override public void onSizeChanged(int a, int b, int c, int d){
 		System.out.println("onSizeChanged " + a + " " + b + " " + c + " " + d);
 	}
-	
-	/** Called when a touch event occurs. */
-	@Override public boolean onTouchEvent(MotionEvent e){
-		float x=e.getX();
-		float y=e.getY();
-		Point point=new Point();
-		point.x=(int)x;//rounds float to int
-		point.y=(int)y;
-		EC c=this.point2Complex(point);
-		this.add(c);
-		//Also need to send it to the display
-		this.calculator.add(c);
-		return false;
-	}
-	
+		
 	//Business methods ----------------------------------------------
 
 	/** Adds a number to be displayed in the world. */

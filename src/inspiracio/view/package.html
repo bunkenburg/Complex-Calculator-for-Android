@@ -1,0 +1,34 @@
+<body>
+	A better API for common touch screen gestures.
+	
+	Maybe a better package name. 
+	
+	For example http://www.lukew.com/ff/entry.asp?1071 explains some common gestures.
+	It should be easy to write listeners that react to these gestures.
+	
+	In the class design, I follow the well-known Java-Beans and Java Swing and AWT more closely than the Android API.
+	
+	I restrict myself to Android API level 7 because there are still many devices with that level.
+	
+	Make your touch listener and register it with a touch dispatcher:
+	<pre>
+		TouchListener listener=new TouchAdapter(){
+			//Override the methods you need
+		};
+		TouchDispatcher dispatcher=newTouchDispatcher();
+		dispatcher.addTouchListener(listener);
+	</pre>
+	
+	Then let your view's onTouchEvent() call the dispatcher:
+	<pre>
+		@Override public void onTouchEvent(MotionEvent e){
+			dispatcher.onTouchEvent(this, e);
+		}
+	</pre>
+	
+	Or set the dispatcher as the OnTouchListener of the view:
+	<pre>
+		view.setOnTouchListener(dispatcher);
+	</pre>
+	
+</body>

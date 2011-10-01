@@ -27,7 +27,9 @@ import inspiracio.numbers.ECList;
 import inspiracio.numbers.Line;
 import inspiracio.numbers.Piclet;
 import inspiracio.numbers.Rectangle;
+import inspiracio.view.DragEvent;
 import inspiracio.view.MouseEvent;
+import inspiracio.view.PinchEvent;
 import inspiracio.view.TouchAdapter;
 import inspiracio.view.TouchDispatcher;
 
@@ -40,7 +42,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 
 /** The complex plane */
 final class Plane extends WorldRepresentation{
@@ -102,6 +103,30 @@ final class Plane extends WorldRepresentation{
 				add(c);
 				//Also need to send it to the display
 				calculator.add(c);
+			}
+			
+			/** For visual testing only. */
+			@Override public void onDrag(DragEvent e){
+				Point point=new Point();
+				point.x=(int)e.getStartX();;//rounds float to int
+				point.y=(int)e.getStartY();
+				EC c=point2Complex(point);
+				add(c);
+				point.x=(int)e.getEndX();;//rounds float to int
+				point.y=(int)e.getEndY();
+				c=point2Complex(point);
+				add(c);
+			}
+
+			@Override public void onPinch(PinchEvent e){
+				Point centrePoint=e.getCentre();//XXX Should keep this point fixed.
+				double factor=e.getFactor();
+		    	ScaleFactor *= factor;
+		    	invalidate();
+			}
+
+			@Override public void onSpread(PinchEvent e){
+				onPinch(e);
 			}
 		});
 		this.setOnTouchListener(dispatcher);

@@ -51,21 +51,21 @@ public class TouchAdapter implements TouchListener{
 	 * XXX What information do we need in the parameter?
 	 * @param e The event. I will restrict its type.
 	 * */
-	@Override public void onDrag(EventObject e){}
+	@Override public void onDrag(DragEvent e){}
 
 	/** User moves finger over the surface without losing contact.
 	 * 
 	 * XXX What information do we need in the parameter?
 	 * @param e The event. I will restrict its type.
 	 * */
-	@Override public void onPinch(EventObject e){}
+	@Override public void onPinch(PinchEvent e){}
 
 	/** User moves finger over the surface without losing contact.
 	 * 
 	 * XXX What information do we need in the parameter?
 	 * @param e The event. I will restrict its type.
 	 * */
-	@Override public void onSpread(EventObject e){}
+	@Override public void onSpread(PinchEvent e){}
 
 	/** User makes a long click with one finger and during the long click,
 	 * taps another finger at a different point.

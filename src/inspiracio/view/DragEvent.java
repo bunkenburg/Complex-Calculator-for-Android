@@ -19,31 +19,48 @@ package inspiracio.view;
 
 import java.util.EventObject;
 
-/** Imitates java.awt.events.MouseEvent for Android. 
- * @author alex
+/** Reported for a drag event. 
+ * Reports the start and end positions. 
+ * (Android's MotionEvent may deliver some historical positions in-between,
+ * but I ignore them for now.)
  * */
-public final class MouseEvent extends EventObject{
-	
+public class DragEvent extends EventObject{
+
 	//State ------------------------------------
 	
-	/** The position of the click. Android uses floats for this. */
-	private float x, y;
+	/** The start position. */
+	private float startX, startY;
 	
+	/** The start position. */
+	private float endX, endY;
+		
 	//Constructor ------------------------------
 	
 	/** Makes a new mouse event.
 	 * I think constructors with many parameters are confusing, especially if the
 	 * parameters are of primitive types. Therefore, use setters.
 	 * @param source The source of the event, usually the view on which it occurred. */
-	public MouseEvent(Object source){
+	DragEvent(Object source){
 		super(source);
 	}
 
 	//Accessors --------------------------------
 	
-	public float getX(){return x;}
-	public void setX(float x){this.x=x;}
+	public float getStartX(){return startX;}
+	public void setStartX(float x){this.startX=x;}
+	public void setStart(float x, float y){this.startX=x; this.startY=y;}
 
-	public float getY(){return y;}
-	public void setY(float y){this.y=y;}
+	public float getStartY(){return startY;}
+	public void setStartY(float y){this.startY=y;}
+	
+	public float getEndX(){return endX;}
+	public void setEndX(float x){this.endX=x;}
+	public void setEnd(float x, float y){this.endX=x; this.endY=y;}
+
+	public float getEndY(){return endY;}
+	public void setEndY(float y){this.endY=y;}
+	
+	@Override public String toString(){
+		return "DragEvent[(" + startX + "," + startY + ") -> (" + endX + "," + endY + ")]";
+	}
 }

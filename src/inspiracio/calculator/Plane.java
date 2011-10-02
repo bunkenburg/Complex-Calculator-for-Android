@@ -107,15 +107,12 @@ final class Plane extends WorldRepresentation{
 			
 			/** For visual testing only. */
 			@Override public void onDrag(DragEvent e){
-				Point point=new Point();
-				point.x=(int)e.getStartX();;//rounds float to int
-				point.y=(int)e.getStartY();
-				EC c=point2Complex(point);
-				add(c);
-				point.x=(int)e.getEndX();;//rounds float to int
-				point.y=(int)e.getEndY();
-				c=point2Complex(point);
-				add(c);
+				for(Point point : e.getPoints()){
+					point.x=(int)e.getStartX();;//rounds float to int
+					point.y=(int)e.getStartY();
+					EC c=point2Complex(point);
+					add(c);
+				}
 			}
 
 			@Override public void onPinch(PinchEvent e){
@@ -125,9 +122,6 @@ final class Plane extends WorldRepresentation{
 		    	invalidate();
 			}
 
-			@Override public void onSpread(PinchEvent e){
-				onPinch(e);
-			}
 		});
 		this.setOnTouchListener(dispatcher);
 	}

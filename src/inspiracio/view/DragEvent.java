@@ -17,7 +17,11 @@
  * */
 package inspiracio.view;
 
+import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.List;
+
+import android.graphics.Point;
 
 /** Reported for a drag event. 
  * Reports the start and end positions. 
@@ -27,13 +31,10 @@ import java.util.EventObject;
 public class DragEvent extends EventObject{
 
 	//State ------------------------------------
+
+	private List<Float>xs;
+	private List<Float>ys;
 	
-	/** The start position. */
-	private float startX, startY;
-	
-	/** The start position. */
-	private float endX, endY;
-		
 	//Constructor ------------------------------
 	
 	/** Makes a new mouse event.
@@ -42,25 +43,34 @@ public class DragEvent extends EventObject{
 	 * @param source The source of the event, usually the view on which it occurred. */
 	DragEvent(Object source){
 		super(source);
+		this.xs=new ArrayList<Float>();
+		this.ys=new ArrayList<Float>();
 	}
 
 	//Accessors --------------------------------
-	
-	public float getStartX(){return startX;}
-	public void setStartX(float x){this.startX=x;}
-	public void setStart(float x, float y){this.startX=x; this.startY=y;}
 
-	public float getStartY(){return startY;}
-	public void setStartY(float y){this.startY=y;}
+	void addPoint(float x, float y){this.xs.add(x);this.ys.add(y);}
 	
-	public float getEndX(){return endX;}
-	public void setEndX(float x){this.endX=x;}
-	public void setEnd(float x, float y){this.endX=x; this.endY=y;}
-
-	public float getEndY(){return endY;}
-	public void setEndY(float y){this.endY=y;}
+	public float getStartX(){return this.xs.get(0);}
+	public float getStartY(){return this.ys.get(0);}
+	
+	public float getEndX(){return this.xs.get(this.xs.size()-1);}
+	public float getEndY(){return this.ys.get(this.ys.size()-1);}
+	
+	/** Returns a list of points. */
+	public List<Point>getPoints(){
+		//Maybe design this method better. Here we instantiate points.
+		List<Point>points=new ArrayList<Point>();
+		for(int i=0; i<xs.size(); i++){
+			Point point=new Point();
+			point.x=(int)(float)xs.get(i);
+			point.y=(int)(float)ys.get(i);
+			points.add(point);
+		}
+		return points;
+	}
 	
 	@Override public String toString(){
-		return "DragEvent[(" + startX + "," + startY + ") -> (" + endX + "," + endY + ")]";
+		return "DragEvent[(" + getStartX() + "," + getStartY() + ") -> (" + getEndX() + "," + getEndY() + ")]";
 	}
 }

@@ -115,11 +115,6 @@ public final class TouchDispatcher implements OnTouchListener{
 					t.onPinch(e);//I hope they are fast and none of them throws exception.
 			}
 			
-			@Override public void onSpread(PinchEvent e){
-				for(TouchListener t : listeners)
-					t.onSpread(e);//I hope they are fast and none of them throws exception.
-			}
-			
 			@Override public void onPressAndClick(EventObject e){throw new RuntimeException("not implemented");}
 			@Override public void onPressAndDrag(EventObject e){throw new RuntimeException("not implemented");}
 			@Override public void onRotate(EventObject e){throw new RuntimeException("not implemented");}
@@ -128,7 +123,22 @@ public final class TouchDispatcher implements OnTouchListener{
 	
 	//interface OnTouchListener -------------------------------
 	
-	static enum Mode{M_0, M_1, M_1_MOVING, M_2, M_2_MOVING}
+	static enum Mode{
+		/** No finger down. */
+		M_0, 
+		
+		/** One finger down */
+		M_1, 
+		
+		/** One finger moving */
+		M_1_MOVING, 
+		
+		/** Two fingers down */
+		M_2, 
+		
+		/** Two fingers moving */
+		M_2_MOVING
+	}
 	Mode mode=Mode.M_0;
 	
 	/** Distinguishes the events we implement and calls the listeners. 
@@ -136,7 +146,7 @@ public final class TouchDispatcher implements OnTouchListener{
 	 * On my phone (Nexus S), a tap produces DOWN; UP, with no MOVE in between.
 	 * */
 	@Override public final boolean onTouch(View view, MotionEvent e){
-		this.dumpEvent(e);
+		this.dumpEvent(mode, e);
 		
 		int action=e.getAction()&MotionEvent.ACTION_MASK;
 		switch(action){
@@ -155,28 +165,17 @@ public final class TouchDispatcher implements OnTouchListener{
 		case MotionEvent.ACTION_MOVE:	//2
 			//A drag.
 			if(mode==Mode.M_1 || mode==Mode.M_1_MOVING){
-				//This only reports the last point.
-				//For fast drags, we also need the historical points.
 				
+				//For extra smoothness, report the historical points.				
 				//The points, in chronological order.
+				DragEvent de=new DragEvent(view);
 				int size=me.getHistorySize();
-				float[] pointsX=new float[size+2];
-				float[] pointsY=new float[size+2];
-				pointsX[0]=this.me.getX();
-				pointsY[0]=this.me.getY();
-				for(int i=0; i<size; i++){
-					pointsX[1+i]=me.getHistoricalX(i);
-					pointsY[1+i]=me.getHistoricalY(i);
-				}
-				pointsX[size+1]=e.getX();
-				pointsY[size+1]=e.getY();
+				de.addPoint(this.me.getX(), this.me.getY());//The start point
+				for(int i=0; i<size; i++)
+					de.addPoint(me.getHistoricalX(i), me.getHistoricalY(i));//the historical points
+				de.addPoint(e.getX(), e.getY());//The end point
 				
-				for(int i=0; i<size+1; i++){
-					DragEvent me=new DragEvent(view);
-					me.setStart(pointsX[i], pointsY[i]);
-					me.setEnd(pointsX[i+1], pointsY[i+1]);
-					this.multiplexer.onDrag(me);
-				}
+				this.multiplexer.onDrag(de);
 				mode=Mode.M_1_MOVING;
 			}
 			//A zoom
@@ -188,11 +187,7 @@ public final class TouchDispatcher implements OnTouchListener{
 				pe.setInitialB(this.me.getX(1), this.me.getY(1));
 				pe.setFinalA(e.getX(0), e.getY(0));
 				pe.setFinalB(e.getX(1), e.getY(1));
-				double factor=pe.getFactor();
-				if(factor<=1)
-					this.multiplexer.onPinch(pe);
-				else
-					this.multiplexer.onSpread(pe);
+				this.multiplexer.onPinch(pe);
 				mode=Mode.M_2_MOVING;
 			}
 			break;
@@ -223,12 +218,13 @@ public final class TouchDispatcher implements OnTouchListener{
 			}
 			//End of a drag
 			else if(mode==Mode.M_1_MOVING){
-				//The position has not changed: no need for callback XXX Or maybe yes, for the historical points?
-				DragEvent me=new DragEvent(view);
-				me.setStartX(this.me.getX());
-				me.setStartY(this.me.getY());
-				me.setEndX(e.getX());
-				me.setEndY(e.getY());
+				//The position has not changed: no need for callback
+				//XXX Or maybe yes, for the historical points?
+				//XXX Are there any historical points here?
+				//XXX Or is the point here just the last points that came with a MOVE?
+				DragEvent de=new DragEvent(view);
+				de.addPoint(this.me.getX(),this.me.getY());
+				de.addPoint(e.getX(),e.getY());
 				//this.multiplexer.onDrag(me);
 			}
 			mode=Mode.M_0;
@@ -240,7 +236,7 @@ public final class TouchDispatcher implements OnTouchListener{
 	}
 
 	/** Show an event in the LogCat view, for debugging */
-	private void dumpEvent(MotionEvent event) {
+	private void dumpEvent(Mode mode, MotionEvent event) {
 	   String names[] = { "DOWN" , "UP" , "MOVE" , "CANCEL" , "OUTSIDE" ,
 	      "POINTER_DOWN" , "POINTER_UP" , "7?" , "8?" , "9?" };
 	   StringBuilder sb = new StringBuilder();
@@ -263,6 +259,7 @@ public final class TouchDispatcher implements OnTouchListener{
 	         sb.append(";" );
 	   }
 	   sb.append("] ");
+	   sb.append(mode.toString());
 	   sb.append(System.currentTimeMillis());
 	   Log.d("TouchDispatcher", sb.toString());
 	}

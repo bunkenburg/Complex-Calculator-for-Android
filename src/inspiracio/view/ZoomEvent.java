@@ -4,18 +4,19 @@ import java.util.EventObject;
 
 import android.graphics.Point;
 
-/** Pinch event or spread event. */
-public class PinchEvent extends EventObject{
+/** Pinch event or spread event.
+ * I call it "ZoomEvent" instead of "PinchOrSpreadEvent" and because it is often used for zoom, but it could be used differently. */
+public final class ZoomEvent extends EventObject{
 
 	//State -----------------------------------
 	
-	float a0x, a0y, a1x, a1y;
-	float b0x, b0y, b1x, b1y;
-	Point centre;
+	private float a0x, a0y, a1x, a1y;
+	private float b0x, b0y, b1x, b1y;
+	private Point centre;
 	
 	//Constructor -----------------------------
 	
-	PinchEvent(Object source){super(source);}
+	ZoomEvent(Object source){super(source);}
 	
 	//Accessors -------------------------------
 	
@@ -41,7 +42,7 @@ public class PinchEvent extends EventObject{
 		return Math.sqrt(sqr(a1x-b1x)+sqr(a1y-b1y));
 	}
 	
-	/** What is the pinch factor? By how much should we zoom in or out? 
+	/** What is the zoom factor? By how much should we zoom in or out? 
 	 * 1 means no zoom.
 	 * Smaller than one means zoom out.
 	 * Greater means zoom in. */

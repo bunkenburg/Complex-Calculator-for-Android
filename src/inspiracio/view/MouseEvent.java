@@ -19,6 +19,8 @@ package inspiracio.view;
 
 import java.util.EventObject;
 
+import android.graphics.Point;
+
 /** Imitates java.awt.events.MouseEvent for Android. 
  * @author alex
  * */
@@ -32,8 +34,6 @@ public final class MouseEvent extends EventObject{
 	//Constructor ------------------------------
 	
 	/** Makes a new mouse event.
-	 * I think constructors with many parameters are confusing, especially if the
-	 * parameters are of primitive types. Therefore, use setters.
 	 * @param source The source of the event, usually the view on which it occurred. */
 	public MouseEvent(Object source){
 		super(source);
@@ -46,4 +46,12 @@ public final class MouseEvent extends EventObject{
 
 	public float getY(){return y;}
 	public void setY(float y){this.y=y;}
+	
+	public void set(float x, float y){this.x=x; this.y=y;}
+	public Point getPoint(){
+		Point point=new Point();
+		point.x=(int)this.x;
+		point.y=(int)this.y;
+		return point;
+	}
 }

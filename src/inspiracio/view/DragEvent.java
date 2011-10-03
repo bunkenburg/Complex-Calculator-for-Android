@@ -28,7 +28,7 @@ import android.graphics.Point;
  * (Android's MotionEvent may deliver some historical positions in-between,
  * but I ignore them for now.)
  * */
-public class DragEvent extends EventObject{
+public final class DragEvent extends EventObject{
 
 	//State ------------------------------------
 
@@ -38,9 +38,7 @@ public class DragEvent extends EventObject{
 	//Constructor ------------------------------
 	
 	/** Makes a new mouse event.
-	 * I think constructors with many parameters are confusing, especially if the
-	 * parameters are of primitive types. Therefore, use setters.
-	 * @param source The source of the event, usually the view on which it occurred. */
+	 * @param source The source of the event, the view on which it occurred. */
 	DragEvent(Object source){
 		super(source);
 		this.xs=new ArrayList<Float>();
@@ -53,9 +51,22 @@ public class DragEvent extends EventObject{
 	
 	public float getStartX(){return this.xs.get(0);}
 	public float getStartY(){return this.ys.get(0);}
+	public Point getStart(){
+		Point start=new Point();
+		start.x=(int)(float)this.xs.get(0);
+		start.y=(int)(float)this.ys.get(0);
+		return start;
+	}
 	
 	public float getEndX(){return this.xs.get(this.xs.size()-1);}
 	public float getEndY(){return this.ys.get(this.ys.size()-1);}
+	public Point getEnd(){
+		Point end=new Point();
+		int size=this.xs.size();
+		end.x=(int)(float)this.xs.get(size-1);
+		end.y=(int)(float)this.ys.get(size-1);
+		return end;
+	}
 	
 	/** Returns a list of points. */
 	public List<Point>getPoints(){

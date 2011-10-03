@@ -29,9 +29,9 @@ import inspiracio.numbers.Piclet;
 import inspiracio.numbers.Rectangle;
 import inspiracio.view.DragEvent;
 import inspiracio.view.MouseEvent;
-import inspiracio.view.PinchEvent;
 import inspiracio.view.TouchAdapter;
 import inspiracio.view.TouchDispatcher;
+import inspiracio.view.ZoomEvent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,11 +60,14 @@ final class Plane extends WorldRepresentation{
     
     /** Length of the we marks on the axes. */
     private static int MARKLENGTH=4;//2
+    
+    /** Initial scale factor */
+    private static final double SCALEFACTOR_INITIAL=80;//40
 
     //State -------------------------------------------------
     
-    /** The number 1 is how many pixels? */
-    private double ScaleFactor = 80;//40D;
+    /** The mathematical distance 1 is how many pixels? */
+    private double ScaleFactor =SCALEFACTOR_INITIAL;//40D;
     
     private double CenterReal;
     private double CenterImaginary;
@@ -92,33 +95,51 @@ final class Plane extends WorldRepresentation{
 		//Touch events
 		TouchDispatcher dispatcher=new TouchDispatcher();
 		dispatcher.addTouchListener(new TouchAdapter(){
+			
 			/** Users selects a number by clicking on it. */
 			@Override public void onClick(MouseEvent e){
-				float x=e.getX();
-				float y=e.getY();
-				Point point=new Point();
-				point.x=(int)x;//rounds float to int
-				point.y=(int)y;
+				Point point=e.getPoint();
 				EC c=point2Complex(point);
-				add(c);
-				//Also need to send it to the display
-				calculator.add(c);
+				add(c);				//Show the point on the plane.
+				calculator.add(c);	//Also need to send it to the display
 			}
 			
-			/** For visual testing only. */
+			/** In calculator-mode, dragging is moving the plane. */
 			@Override public void onDrag(DragEvent e){
-				for(Point point : e.getPoints()){
-					point.x=(int)e.getStartX();;//rounds float to int
-					point.y=(int)e.getStartY();
-					EC c=point2Complex(point);
-					add(c);
-				}
+				//Only for visual debugging of my implementation of drag-events.
+				//for(Point point : e.getPoints())add(point2Complex(point));
+				
+				Point start=e.getStart();
+				Point end=e.getEnd();
+				int deltaX=start.x-end.x;
+				int deltaY=start.y-end.y;
+				Plane.this.shift(deltaX, deltaY);
 			}
 
-			@Override public void onPinch(PinchEvent e){
-				Point centrePoint=e.getCentre();//XXX Should keep this point fixed.
-				double factor=e.getFactor();
-		    	ScaleFactor *= factor;
+			/** Zooming. */
+			@Override public void onZoom(ZoomEvent e){
+
+				//Keep this point fixed.
+				Point fixPoint=e.getCentre();
+				EC fixNumber=Plane.this.point2Complex(fixPoint);
+
+				//Math distance from fix to centre, before zooming.
+				double deltaX= CenterReal-fixNumber.re();
+				double deltaY= CenterImaginary-fixNumber.im();
+				
+				//Pixel distance from fix to centre. Keep this constant.
+				int pixelX=math2Pix(deltaX);
+				int pixelY=math2Pix(deltaY);
+
+				//Now scale.
+		    	ScaleFactor *= e.getFactor();
+		    	
+		    	//New math distance from fix to centre, after zooming.
+		    	deltaX=pix2Math(pixelX);
+		    	deltaY=pix2Math(pixelY);
+		    	CenterReal = fixNumber.re()+deltaX;
+		    	CenterImaginary = fixNumber.im()+deltaY;
+		    	
 		    	invalidate();
 			}
 
@@ -224,7 +245,6 @@ final class Plane extends WorldRepresentation{
         }
         
         //Draws the numbers we are currently showing
-        this.add(EC.mkCartesian(10, 1));
         this.drawStuff(drawing);
 	}
 
@@ -253,24 +273,18 @@ final class Plane extends WorldRepresentation{
     @Override void reset(){
         CenterReal = 0.0D;
         CenterImaginary = 0.0D;
+        this.ScaleFactor=SCALEFACTOR_INITIAL;
 		this.invalidate();
     }
 
-    /** Shift the image by some pixel distance. */
-    void shift(int i, int j){
+    /** Shift the image by some pixel distance. 
+     * @param i horizontal right pixel shift
+     * @param j vertical up?/down? pixel shift
+     * */
+    private void shift(int i, int j){
         CenterImaginary -= pix2Math(j);
         CenterReal += pix2Math(i);
 		this.invalidate();
-    }
-
-    void zoomIn(){
-    	ScaleFactor *= 2D;
-    	this.invalidate();
-    }
-
-    void zoomOut(){
-    	ScaleFactor /= 2D;
-    	this.invalidate();
     }
 
 	//Converters ----------------------------------------------------
@@ -309,7 +323,7 @@ final class Plane extends WorldRepresentation{
         return (int)((TopImaginary - d) * ScaleFactor);
     }
 
-    /** Not sure what it does. */
+    /** Works out axis markers with smooth numbers. */
     private static double raiseSmooth(double d){
         int i;
         for(i = 0; d < 1.0D; i--)

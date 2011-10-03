@@ -1,27 +1,27 @@
 Release 1.00:
 
-* Font size on display is very small
-* plane: swipe for scroll
-* plane: reset
-* plane: clear
+* bug: red triangle for extremes on the left and bottom are wrong. Reset doesn't clear extremes.
 * display: erase old "=" and result
 * Input method service with a good keyboard for mathematics
+
+BUGS:
+
+* When going into landscape, plane loses displayed numbers.
+
+TODO:
+
+* I can't draw a filled triangle. Axes of plane.
+* Display numbers with fewer digits.
+
+DONE:
+
+* Calculation mode: put result on the plane
+* plane: touch for selecting a number
+* plane: pinch or spread for zooming
+* plane: drag for moving
 
 Release 2.0:
 
 * z -> f(z) mode
 * z -> |f(z)| mode
 * x -> f(z) mode
-
-BUGS:
-
-* When going into landscape, plane loses 1+i.
-
-TODO:
-
-* I can't draw a filled triangle. Axes of plane.
-
-DONE:
-
-* Calculation mode: put result on the plane
-* plane: touch for selecting a number

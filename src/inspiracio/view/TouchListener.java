@@ -31,7 +31,6 @@ public interface TouchListener{
 	void onClick(MouseEvent e);
 	
 	/** User has tapped the surface with finger tip, for a longer time.
-	 * How long must a click be to be a long click? Android system setting.
 	 * @param e Describes the event.
 	 * */
 	void onLongClick(MouseEvent e);
@@ -42,7 +41,7 @@ public interface TouchListener{
 	void onDoubleClick(MouseEvent e);
 	
 	/** User moves finger over the surface without losing contact.
-	 * @param e The event. I will restrict its type.
+	 * @param e The event.
 	 * */
 	void onDrag(DragEvent e);
 
@@ -51,27 +50,21 @@ public interface TouchListener{
 	 * If the fingers become further apart, it's a spread for zooming in.
 	 * @param e The event.
 	 * */
-	void onPinch(PinchEvent e);
+	void onZoom(ZoomEvent e);
 	
 	/** User makes a long click with one finger and during the long click,
 	 * taps another finger at a different point.
-	 * 
-	 * XXX What information do we need in the parameter?
 	 * @param e The event. I will restrict its type.
 	 * */
 	void onPressAndClick(EventObject e);
 	
 	/** User makes a long click with one finger and during the long click,
 	 * drags another finger from one point to another.
-	 * 
-	 * XXX What information do we need in the parameter?
 	 * @param e The event. I will restrict its type.
 	 * */
 	void onPressAndDrag(EventObject e);
 	
 	/** User uses two fingers to describe a rotation on the screen.
-	 * XXX This is not clearly defined.
-	 * XXX What information do we need in the parameter?
 	 * @param e The event. I will restrict its type.
 	 * */
 	void onRotate(EventObject e);

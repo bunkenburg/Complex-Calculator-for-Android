@@ -22,8 +22,6 @@ import java.util.EventObject;
 /** A touch listener implementation that implements all callbacks by doing nothing.
  * You can extend this class and override only the methods you need.
  * 
- * Like usual for Java-Beans events.
- * 
  * @author alex
  */
 public class TouchAdapter implements TouchListener{	
@@ -36,7 +34,6 @@ public class TouchAdapter implements TouchListener{
 	@Override public void onClick(MouseEvent e){}
 
 	/** User has tapped the surface with finger tip, for a longer time.
-	 * How long must a click be to be a long click? Android system setting.
 	 * @param e Describes the event.
 	 * */
 	@Override public void onLongClick(MouseEvent e){}
@@ -47,9 +44,7 @@ public class TouchAdapter implements TouchListener{
 	@Override public void onDoubleClick(MouseEvent e){}
 
 	/** User moves finger over the surface without losing contact.
-	 * 
-	 * XXX What information do we need in the parameter?
-	 * @param e The event. I will restrict its type.
+	 * @param e The event.
 	 * */
 	@Override public void onDrag(DragEvent e){}
 
@@ -58,27 +53,21 @@ public class TouchAdapter implements TouchListener{
 	 * If the fingers become further apart, it's a spread for zooming in.
 	 * @param e The event.
 	 * */
-	@Override public void onPinch(PinchEvent e){}
+	@Override public void onZoom(ZoomEvent e){}
 
 	/** User makes a long click with one finger and during the long click,
 	 * taps another finger at a different point.
-	 * 
-	 * XXX What information do we need in the parameter?
 	 * @param e The event. I will restrict its type.
 	 * */
 	@Override public void onPressAndClick(EventObject e){}
 
 	/** User makes a long click with one finger and during the long click,
 	 * drags another finger from one point to another.
-	 * 
-	 * XXX What information do we need in the parameter?
-	 * @param e The event. I will restrict its type.
+	 * @param e The event.
 	 * */
 	@Override public void onPressAndDrag(EventObject e){}
 
 	/** User uses two fingers to describe a rotation on the screen.
-	 * XXX This is not clearly defined.
-	 * XXX What information do we need in the parameter?
 	 * @param e The event. I will restrict its type.
 	 * */
 	@Override public void onRotate(EventObject e){}

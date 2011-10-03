@@ -59,11 +59,11 @@ import android.view.View.OnTouchListener;
  * <h3>implemented</h3>
  * These callbacks are implemented:
  * <ul>
- * 	<li><strike>onClick</strike>
+ * 	<li>onClick
  * 	<li><strike>onDoubleClick</strike>
- * 	<li><strike>onDrag</strike>
+ * 	<li>onDrag
  * 	<li><strike>onLongClick</strike>
- * 	<li><strike>onPinch</strike>
+ * 	<li>onZoom
  * 	<li><strike>onPressAndClick</strike>
  * 	<li><strike>onPressAndDrag</strike>
  * 	<li><strike>onRotate</strike>
@@ -84,8 +84,9 @@ public final class TouchDispatcher implements OnTouchListener{
 	 * all registered listeners. */
 	private TouchListener multiplexer;
 	
-	/** The last motion event that we have received. */
-	private MotionEvent me;
+	/** The last motion event that we have received.
+	 * Maybe we can store less than the whole event. */
+	private MotionEvent lastMotionEvent;
 	
 	//Constructor ---------------------------------------------
 	
@@ -105,14 +106,13 @@ public final class TouchDispatcher implements OnTouchListener{
 			@Override public void onDoubleClick(MouseEvent e){throw new RuntimeException("not implemented");}
 			
 			@Override public void onDrag(DragEvent e){
-				//Log.d("TouchDispatcher", "onDrag " + e);
 				for(TouchListener t : listeners)
 					t.onDrag(e);//I hope they are fast and none of them throws exception.
 			}
 			
-			@Override public void onPinch(PinchEvent e){
+			@Override public void onZoom(ZoomEvent e){
 				for(TouchListener t : listeners)
-					t.onPinch(e);//I hope they are fast and none of them throws exception.
+					t.onZoom(e);//I hope they are fast and none of them throws exception.
 			}
 			
 			@Override public void onPressAndClick(EventObject e){throw new RuntimeException("not implemented");}
@@ -123,7 +123,7 @@ public final class TouchDispatcher implements OnTouchListener{
 	
 	//interface OnTouchListener -------------------------------
 	
-	static enum Mode{
+	private static enum Mode{
 		/** No finger down. */
 		M_0, 
 		
@@ -139,12 +139,14 @@ public final class TouchDispatcher implements OnTouchListener{
 		/** Two fingers moving */
 		M_2_MOVING
 	}
-	Mode mode=Mode.M_0;
+	private Mode mode=Mode.M_0;
 	
-	/** Distinguishes the events we implement and calls the listeners. 
-	 * 
-	 * On my phone (Nexus S), a tap produces DOWN; UP, with no MOVE in between.
-	 * */
+	private static enum Gesture{NONE, CLICK, DRAG, ZOOM}
+	
+	/** What gesture is currently happening? */
+	private Gesture gesture=Gesture.NONE;
+	
+	/** Distinguishes the events we implement and calls the listeners. */
 	@Override public final boolean onTouch(View view, MotionEvent e){
 		this.dumpEvent(mode, e);
 		
@@ -152,43 +154,52 @@ public final class TouchDispatcher implements OnTouchListener{
 		switch(action){
 		
 		//Cancel: forget everything
-		case MotionEvent.ACTION_CANCEL:
+		case MotionEvent.ACTION_CANCEL:	//3
 			mode=Mode.M_0;
+			gesture=Gesture.NONE;
 			break;
 			
 		//Setting down the first finger
 		case MotionEvent.ACTION_DOWN:	//0
 			mode=Mode.M_1;
+			//Doesn't change current gesture. Could be CLICK, DRAG, or ZOOM.
 			break;
 			
 		//Move: A drag or a zoom.
 		case MotionEvent.ACTION_MOVE:	//2
-			//A drag.
-			if(mode==Mode.M_1 || mode==Mode.M_1_MOVING){
-				
+			
+			//A drag. One finger and no zoom.
+			if((mode==Mode.M_1 || mode==Mode.M_1_MOVING) && (gesture==Gesture.NONE || gesture==Gesture.DRAG)){
 				//For extra smoothness, report the historical points.				
 				//The points, in chronological order.
 				DragEvent de=new DragEvent(view);
-				int size=me.getHistorySize();
-				de.addPoint(this.me.getX(), this.me.getY());//The start point
+				int size=e.getHistorySize();
+				de.addPoint(this.lastMotionEvent.getX(), this.lastMotionEvent.getY());//The start point, from the last event.
 				for(int i=0; i<size; i++)
-					de.addPoint(me.getHistoricalX(i), me.getHistoricalY(i));//the historical points
-				de.addPoint(e.getX(), e.getY());//The end point
+					de.addPoint(e.getHistoricalX(i), e.getHistoricalY(i));//the historical points, from this event
+				de.addPoint(e.getX(), e.getY());//The end point, from this event
 				
 				this.multiplexer.onDrag(de);
 				mode=Mode.M_1_MOVING;
+				gesture=Gesture.DRAG;
 			}
-			//A zoom
-			else if(mode==Mode.M_2 || mode==Mode.M_2_MOVING){
-				//XXX For extra smoothness, loop over the historical points too.
-				//XXX I'm guessing the pointer indexes.
-				PinchEvent pe=new PinchEvent(view);
-				pe.setInitialA(this.me.getX(0), this.me.getY(0));
-				pe.setInitialB(this.me.getX(1), this.me.getY(1));
-				pe.setFinalA(e.getX(0), e.getY(0));
-				pe.setFinalB(e.getX(1), e.getY(1));
-				this.multiplexer.onPinch(pe);
+			
+			//A zoom. Two fingers and no drag.
+			else if((mode==Mode.M_2 || mode==Mode.M_2_MOVING) && (gesture==Gesture.NONE || gesture==Gesture.ZOOM)){
+				//For extra smoothness or some rotation, could add the historical points too. But now I'm doing just zoom, not rotation.
+				//Pointer indexes may have changed since the last event.
+				int p0id=this.lastMotionEvent.getPointerId(0);
+				int p1id=this.lastMotionEvent.getPointerId(1);
+				ZoomEvent pe=new ZoomEvent(view);
+				pe.setInitialA(this.lastMotionEvent.getX(0), this.lastMotionEvent.getY(0));
+				pe.setInitialB(this.lastMotionEvent.getX(1), this.lastMotionEvent.getY(1));
+				int zero=e.findPointerIndex(p0id);
+				int one=e.findPointerIndex(p1id);
+				pe.setFinalA(e.getX(zero), e.getY(zero));
+				pe.setFinalB(e.getX(one), e.getY(one));
+				this.multiplexer.onZoom(pe);
 				mode=Mode.M_2_MOVING;
+				gesture=Gesture.ZOOM;
 			}
 			break;
 			
@@ -197,41 +208,32 @@ public final class TouchDispatcher implements OnTouchListener{
 			mode=Mode.M_0;
 			break;
 			
-		//Another finger joins. Ignore third finger ...
+		//Another finger joins. Ignore third finger.
 		case MotionEvent.ACTION_POINTER_DOWN:
 			mode=Mode.M_2;
 			break;
 			
-		//A finger leaves. Ignore third finger ...
+		//A finger leaves. Ignore third finger.
 		case MotionEvent.ACTION_POINTER_UP:
 			mode=Mode.M_1;
 			break;
 			
-		//All fingers are up.
+		//Raise last finger.
 		case MotionEvent.ACTION_UP:	//1
-			//A click!
-			if(mode==Mode.M_1){
+			
+			//A click
+			if(gesture==Gesture.NONE && mode==Mode.M_1){
 				MouseEvent me=new MouseEvent(view);
-				me.setX(e.getX());
-				me.setY(e.getY());
+				me.set(e.getX(), e.getY());
 				this.multiplexer.onClick(me);
 			}
-			//End of a drag
-			else if(mode==Mode.M_1_MOVING){
-				//The position has not changed: no need for callback
-				//XXX Or maybe yes, for the historical points?
-				//XXX Are there any historical points here?
-				//XXX Or is the point here just the last points that came with a MOVE?
-				DragEvent de=new DragEvent(view);
-				de.addPoint(this.me.getX(),this.me.getY());
-				de.addPoint(e.getX(),e.getY());
-				//this.multiplexer.onDrag(me);
-			}
+			
 			mode=Mode.M_0;
+			gesture=Gesture.NONE;
 			break;
 		}
 				
-		this.me=MotionEvent.obtain(e);//In any case, remember the last motion event. This deep-copies the whole event.Maybe we only need some fields.
+		this.lastMotionEvent=MotionEvent.obtain(e);//In any case, remember the last motion event. This deep-copies the whole event.Maybe we only need some fields.
 		return true;
 	}
 
@@ -260,9 +262,11 @@ public final class TouchDispatcher implements OnTouchListener{
 	   }
 	   sb.append("] ");
 	   sb.append(mode.toString());
+	   sb.append(" ");
 	   sb.append(System.currentTimeMillis());
 	   Log.d("TouchDispatcher", sb.toString());
 	}
+	
 	//Manage registered listeners ----------------------------
 	
 	/** Registers a touch listener. If you register it twice, it will receive the 
@@ -275,7 +279,7 @@ public final class TouchDispatcher implements OnTouchListener{
 		}
 	}
 	
-	/** Unregisters a touch listener. If if was not registered, nothing. 
+	/** Unregisters a touch listener. If it was not registered, nothing. 
 	 * @param listener 
 	 * */
 	public final void removeTouchListener(TouchListener listener){

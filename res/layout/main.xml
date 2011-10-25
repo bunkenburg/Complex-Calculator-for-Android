@@ -35,14 +35,18 @@
 	</LinearLayout>
 
 	<!--Could also use:
-		android:inputMethod which input method to use
+	
+		Don't know how to make this work:
+		android:inputMethod="inspiracio.calculator.SoftKeyboard"
+		How can I make CC use its own input method service?
+		
 		android:scrollHorizontally="true"
 		android:imeActionLabel="=" Seems to disable key 
 		android:digits=" !sinhcoshtanhconjoppReImlnexp^modargiepi()789*/456+-123=0.z"
 	-->
 	<EditText
 		android:id="@+id/display" 
-		android:layout_height="wrap_content" 
+ 		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent" 
 		android:layout_alignParentBottom="true"
 		android:inputType="text|textNoSuggestions|textAutoComplete"

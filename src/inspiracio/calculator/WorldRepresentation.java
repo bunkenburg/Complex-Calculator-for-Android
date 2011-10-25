@@ -19,6 +19,7 @@ package inspiracio.calculator;
 
 import inspiracio.numbers.EC;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -61,7 +62,10 @@ abstract class WorldRepresentation extends View{
     abstract void reset();
     
     void set(ComplexWorld calculator){this.calculator=calculator;}
-    
+
     //Helpers --------------------------------------------------------------------------
-	
+
+	abstract void parcel(String prefix, Bundle b);
+	abstract void unparcel(String prefix, Bundle b);
+
 }

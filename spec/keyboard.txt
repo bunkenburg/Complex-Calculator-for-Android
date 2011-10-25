@@ -1,0 +1,72 @@
+Calculator keyboard:
+
+41 keys.
+
+First try, like in applet, 5 cols * 9 rows:
+
+!			del	C
+sinh	cosh	tanh	conj	opp
+sin	cos	tan	Re	Im
+ln	exp	^	mod	arg
+i	e	pi	(	)
+7	8	9	*	/
+4	5	6	+	-
+1	2	3	z	=
+0	.	inf		=
+
+Too high.
+
+Second try, 7 columns * 6 rows
+
+ln	exp	^	mod	arg	del	C
+sin	cos	tan	sinh	cosh	tanh	!
+0	i	e	pi	inf	(	)
+7	8	9	Re	Im	conj	opp
+4	5	6	*	/	+	-
+1	2	3	.	z		=
+
+Still too high and narrow.
+
+Third try, 10 columns * 4 rows, no C:
+
+7	8	9	i	sin	cos	tan	sinh	cosh	tanh
+4	5	6	e	Re	Im	mod	arg	conj	opp
+1	2	3	pi	ln	exp	^	(	)	del
+0	.	inf	*	/	+	-	!	z	=
+
+Background: light grey.
+
+Remember in variables: zButton and equalsButton. 
+The action listener for most keys:
+        	@Override public void actionPerformed(ActionEvent e){
+                if(mode==CALC)
+                    eraseOldResult();
+                display.paste(e.getActionCommand());
+                display.requestFocus();
+                if(mode!=CALC)
+                    functionChange();
+
+del:
+                if(mode==CALC)
+                    eraseOldResult();
+                display.paste(e.getActionCommand());
+                display.requestFocus();
+                if(mode!=CALC)
+                    functionChange();
+
+C:
+                    display.clearAll();
+                    if(mode!=CALC)
+                        display.prepend("f(" + variable + ") = ");
+                    display.requestFocus();
+
+z:
+            	@Override public void actionPerformed(ActionEvent actionevent){
+                    display.paste(variable);
+                    display.requestFocus();
+                    if(mode!=CALC)
+                        functionChange();
+
+=:
+                    doEquals();
+                    display.requestFocus();

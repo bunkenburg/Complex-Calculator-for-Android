@@ -1,0 +1,17 @@
+ <Keyboard
+         android:keyWidth="%10p"
+         android:keyHeight="50px"
+         android:horizontalGap="2px"
+         android:verticalGap="2px" >
+     <Row android:keyWidth="32px" >
+         <Key android:keyLabel="A" />
+         ...
+     </Row>
+     ...
+ </Keyboard>
+
+android:horizontalGap		Default horizontal gap between keys. 
+android:keyHeight		Default height of a key, in pixels or percentage of display width. 
+android:keyWidth		Default width of a key, in pixels or percentage of display width. 
+android:verticalGap		Default vertical gap between rows of keys. 
+

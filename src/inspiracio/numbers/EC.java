@@ -23,21 +23,24 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.NumberFormat;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 // Referenced classes of package bunkenba.numbers:
 //            Borrow, PartialException
 
 /** The Extended Complex numbers: that is, complex numbers and one infinity. 
  * Instances of EC are immutable. 
  * */
-public final class EC{
+public final class EC implements Parcelable{
 
 	//Constants ------------------------------------------------------------
 	
     private static final String piString ="\u03C0";
     private static final String infinityString ="\u221E";// "inf";
-    public static final EC E = mkReal(2.7182818284590451D);
+    public static final EC E = mkReal(Math.E);
     public static final EC HALF = mkReal(0.5D);
-    //private static final EC HALFPI = mkReal(1.5707963267948966D);
+    //private static final EC HALFPI = mkReal(Math.PI/2);
     public static final EC I = mkCartesian(0.0D, 1.0D);
     public static final EC INFINITY = mkInf();
     //private static final EC MINUSI = mkCartesian(0.0D, -1D);
@@ -46,10 +49,10 @@ public final class EC{
     //private static final EC NEGHALF = mkReal(-0.5D);
     private static final EC NEGHALFI = mkCartesian(0.0D, -0.5D);
     public static final EC ONE = mkReal(1.0D);
-    //private static final EC ONEANDHALFPI = mkReal(4.7123889803846897D);
+    //private static final EC ONEANDHALFPI = mkReal(Math.PI*1.5);
     public static final EC PI = mkReal(Math.PI);
     //private static final EC TWO = mkReal(2D);
-    //private static final EC TWOPI = mkReal(6.2831853071795862D);
+    //private static final EC TWOPI = mkReal(Math.PI*2);
     public static final EC ZERO = mkReal(0.0D);
     
     //Static state: affects continuous mapping z -> f(z) and some settings. ------------
@@ -80,6 +83,28 @@ public final class EC{
     /** Imaginary part of the number */
     private final double imag;
 
+    //Parcelable -------------------------------------------------------------
+    
+    @Override public int describeContents(){return 0;}
+    @Override public void writeToParcel(Parcel p, int flags){
+    	p.writeBooleanArray(new boolean[]{finite});
+    	p.writeDouble(real);
+    	p.writeDouble(imag);
+    }
+    public static Parcelable.Creator<EC>CREATOR=new Parcelable.Creator<EC>(){
+    	@Override public EC[]newArray(int size){return new EC[size];}
+    	@Override public EC createFromParcel(Parcel p){
+    		boolean[] bs=new boolean[1];
+    		p.readBooleanArray(bs);
+    		boolean f=bs[0];
+    		double r=p.readDouble();
+    		double i=p.readDouble();
+    		if(!f)
+    			return EC.INFINITY;
+    		return EC.mkCartesian(r, i);
+    	}
+	};
+    
     //Settings -------------------------------------------------------------
     
     public static void setPrecision(int np){

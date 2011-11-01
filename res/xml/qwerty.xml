@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+/*	Copyright 2011 Alexander Bunkenburg alex@inspiracio.com
+ * 
+ * This file is part of Complex Calculator.
+ * 
+ * Complex Calculator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Complex Calculator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Complex Calculator. If not, see <http://www.gnu.org/licenses/>.
+ **/
+-->
+<!--  The layout of the calculator keyboard. 
+
+* android:codes is the output character. Correct! How output several characters?
+
+-->
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="10%p"
+    android:horizontalGap="0px"
+    android:verticalGap="0px"
+    android:keyHeight="@dimen/key_height"
+>
+	<!-- 7	8	9	i	sin	cos	tan	sinh	cosh	tanh -->
+    <Row>
+        <Key android:keyOutputText="7" android:keyLabel="7" android:keyEdgeFlags="left"/>
+        <Key android:keyOutputText="8" android:keyLabel="8"/>
+        <Key android:keyOutputText="9" android:keyLabel="9"/>
+        <Key android:keyOutputText="i" android:keyLabel="i"/>
+        <Key android:keyOutputText="sin" android:keyLabel="sin"/>
+        <Key android:keyOutputText="cos" android:keyLabel="cos"/>
+        <Key android:keyOutputText="tan" android:keyLabel="tan"/>
+        <Key android:keyOutputText="sinh" android:keyLabel="sinh"/>
+        <Key android:keyOutputText="cosh" android:keyLabel="cosh"/>
+        <Key android:keyOutputText="tanh" android:keyLabel="tanh" android:keyEdgeFlags="right"/>
+    </Row>
+
+	<!-- 4	5	6	e	Re	Im	mod	arg	conj	opp	-->
+    <Row>
+        <Key android:keyOutputText="4" android:keyLabel="4" android:keyEdgeFlags="left"/>
+        <Key android:keyOutputText="5" android:keyLabel="5"/>
+        <Key android:keyOutputText="6" android:keyLabel="6"/>
+        <Key android:keyOutputText="e" android:keyLabel="e"/>
+        <Key android:keyOutputText="Re" android:keyLabel="Re"/>
+        <Key android:keyOutputText="Im" android:keyLabel="Im"/>
+        <Key android:keyOutputText="mod" android:keyLabel="mod"/>
+        <Key android:keyOutputText="arg" android:keyLabel="arg"/>
+        <Key android:keyOutputText="conj" android:keyLabel="conj"/>
+        <Key android:keyOutputText="opp" android:keyLabel="opp"/>
+    </Row>
+    
+	<!-- 1	2	3	pi	ln	exp	^	(	)	del	 -->
+    <Row>
+        <Key android:keyOutputText="1" android:keyLabel="1" android:keyEdgeFlags="left"/>
+        <Key android:keyOutputText="2" android:keyLabel="2"/>
+        <Key android:keyOutputText="3" android:keyLabel="3"/>
+        <Key android:keyOutputText="\u03C0" android:keyLabel="\u03C0"/>
+        <Key android:keyOutputText="ln" android:keyLabel="ln"/>
+        <Key android:keyOutputText="exp" android:keyLabel="exp"/>
+        <Key android:keyOutputText="^" android:keyLabel="^"/>
+        <Key android:keyOutputText="(" android:keyLabel="("/>
+        <Key android:keyOutputText=")" android:keyLabel=")"/>
+        <Key android:codes="-5" android:keyLabel="del" android:isRepeatable="true"/>
+    </Row>
+
+	<!-- 0	.	inf	*	/	+	-	!	z	=	 -->
+    <Row>
+        <Key android:keyOutputText="0" android:keyLabel="0" android:keyEdgeFlags="left"/>
+        <Key android:keyOutputText="." android:keyLabel="."/>
+        <Key android:keyOutputText="\u221E" android:keyLabel="\u221E"/>
+        <Key android:keyOutputText="*" android:keyLabel="*"/>
+        <Key android:keyOutputText="/" android:keyLabel="/"/>
+        <Key android:keyOutputText="+" android:keyLabel="+"/>
+        <Key android:keyOutputText="-" android:keyLabel="-"/>
+        <Key android:keyOutputText="!" android:keyLabel="!"/>
+        <Key android:keyOutputText="z" android:keyLabel="z"/>
+        <!-- android:keyOutputText="=" 10 -->
+        <Key android:codes="61" android:keyLabel="="/>
+    </Row>
+
+</Keyboard>

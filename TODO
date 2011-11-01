@@ -1,12 +1,12 @@
-Release 1.00:
+Release 1.0:
 
-* bug: red triangle for extremes on the left and bottom are wrong. Reset doesn't clear extremes.
 * display: erase old "=" and result
 * Input method service with a good keyboard for mathematics
+* select our keyboard for display
+* prevent keyboard until focus on display
 
 BUGS:
 
-* When going into landscape, plane loses displayed numbers.
 
 TODO:
 
@@ -19,9 +19,14 @@ DONE:
 * plane: touch for selecting a number
 * plane: pinch or spread for zooming
 * plane: drag for moving
+* When going into landscape, plane loses displayed numbers.
 
 Release 2.0:
 
 * z -> f(z) mode
 * z -> |f(z)| mode
 * x -> f(z) mode
+* haptic for bad results
+* shaking for clear
+* buttons clear and reset in a better place
+* use fragments

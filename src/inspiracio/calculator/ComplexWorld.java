@@ -26,13 +26,17 @@ import inspiracio.numbers.PartialException;
 import inspiracio.parsing.SyntaxTree;
 
 import java.text.ParseException;
+import java.util.List;
 
 import android.app.Activity;
+import android.inputmethodservice.InputMethodService;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -55,13 +59,20 @@ public final class ComplexWorld extends Activity{
 	
 	//Constructors ----------------------------------------------------------------
 	
-	public ComplexWorld(){}
+	public ComplexWorld(){
+		//Make sure the class is loaded before inflating,
+		//since the EditText references that class.
+		//XXX Doesn't work. Find out how I can specify that
+		//CC should use its on InputMethodService.
+		Class<SoftKeyboard> c=SoftKeyboard.class;
+		System.out.println(c);
+	}
 	
 	//Activity methods ------------------------------------------------------------
 	
     /** Called when the activity is first created. */
-    @Override public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @Override public void onCreate(Bundle bundle){
+    	super.onCreate(bundle);
         this.setContentView(R.layout.main);
         
         this.resetButton=(Button)this.findViewById(R.id.resetButton);
@@ -78,7 +89,17 @@ public final class ComplexWorld extends Activity{
         this.world.set(this);
         
         this.display=(EditText)this.findViewById(R.id.display);
-        display.setOnKeyListener(new OnKeyListener(){
+        //InputMethodService ims=new SoftKeyboard();
+        //Suggest the complex calculator keyboard to the user.
+        //InputMethodManager imm=(InputMethodManager)this.getSystemService(INPUT_METHOD_SERVICE);
+        //List<InputMethodInfo>imis=imm.getInputMethodList();
+        //If CC is not in there, suggest putting it there. (?)
+        //imis=imm.getEnabledInputMethodList();
+        //If CC is not in there, suggest enabling it.
+        //Can I find out which is the currently selected input method?
+        //If it's not CC, show picker? Or is that too pushy?
+        //imm.showInputMethodPicker();
+        this.display.setOnKeyListener(new OnKeyListener(){
             @Override public boolean onKey(View v, int keyCode, KeyEvent event){
                 // If the event is a key-down event on the "enter" button
             	int action=event.getAction();
@@ -94,11 +115,23 @@ public final class ComplexWorld extends Activity{
         });
         //The text size of the display if 27.
         //float t=display.getPaint().getTextSize();//27
+        //if(bundle!=null)this.world.onRestoreInstanceState(bundle);
     }
+
+    /** Writes the state to bundle. */
+	@Override protected final void onSaveInstanceState(Bundle bundle){
+		super.onSaveInstanceState(bundle);
+		this.world.parcel("inspiracio.calculator.world", bundle);
+	}
+
+	@Override protected final void onRestoreInstanceState(Bundle bundle){
+		super.onRestoreInstanceState(bundle);
+		this.world.unparcel("inspiracio.calculator.world", bundle);
+	}
 
     //Methods ----------------------------------------------------------------
     
-    /** Adds a complex number to the display. */
+	/** Adds a complex number to the display. */
     final void add(EC ec){
     	int start=display.getSelectionStart();
     	int end=display.getSelectionEnd();

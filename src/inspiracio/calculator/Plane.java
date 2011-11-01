@@ -33,6 +33,7 @@ import inspiracio.view.TouchAdapter;
 import inspiracio.view.TouchDispatcher;
 import inspiracio.view.ZoomEvent;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +42,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Bundle;
 import android.util.AttributeSet;
 
 /** The complex plane */
@@ -67,7 +69,7 @@ final class Plane extends WorldRepresentation{
     //State -------------------------------------------------
     
     /** The mathematical distance 1 is how many pixels? */
-    private double ScaleFactor =SCALEFACTOR_INITIAL;//40D;
+    private double ScaleFactor=SCALEFACTOR_INITIAL;//40D;
     
     private double CenterReal;
     private double CenterImaginary;
@@ -150,7 +152,7 @@ final class Plane extends WorldRepresentation{
 	//View methods ------------------------------------------------
 	
 	/** Draw the world. */
-	@Override protected void onDraw(Canvas canvas){
+	@Override protected final void onDraw(Canvas canvas){
 		//Get ready
 		this.setBackgroundColor(Color.WHITE);
 		int height=this.getHeight();
@@ -248,8 +250,43 @@ final class Plane extends WorldRepresentation{
         this.drawStuff(drawing);
 	}
 
+	@Override public final void parcel(String prefix, Bundle b){
+		b.putDouble(prefix + ".BottomImaginary", BottomImaginary);
+		b.putDouble(prefix + ".CenterImaginary", CenterImaginary);
+		b.putDouble(prefix + ".CenterReal", CenterReal);
+		b.putDouble(prefix + ".LeftReal", LeftReal);
+		b.putDouble(prefix + ".MaxImaginary", MaxImaginary);
+		b.putDouble(prefix + ".MaxReal", MaxReal);
+		b.putDouble(prefix + ".MinImaginary", MinImaginary);
+		b.putDouble(prefix + ".MinReal", MinReal);
+		//numbers
+		ArrayList<EC> zs=new ArrayList<EC>(numbers.size());
+		zs.addAll(numbers);
+		b.putParcelableArrayList(prefix + ".numbers", zs);
+		b.putDouble(prefix + ".RightReal", RightReal);
+		b.putDouble(prefix + ".ScaleFactor", ScaleFactor);
+		b.putDouble(prefix + ".TopImaginary", TopImaginary);
+	}
+		
+	@Override public final void unparcel(String prefix, Bundle b){
+		BottomImaginary=b.getDouble(prefix + ".BottomImaginary");
+		CenterImaginary=b.getDouble(prefix + ".CenterImaginary");
+		CenterReal=b.getDouble(prefix + ".CenterReal");
+		LeftReal=b.getDouble(prefix + ".LeftReal");
+		MaxImaginary=b.getDouble(prefix + ".MaxImaginary");
+		MaxReal=b.getDouble(prefix + ".MaxReal");
+		MinImaginary=b.getDouble(prefix + ".MinImaginary");
+		MinReal=b.getDouble(prefix + ".MinReal");
+		//numbers
+		ArrayList<EC>zs=b.getParcelableArrayList(prefix + ".numbers");
+		numbers.addAll(zs);
+		RightReal=b.getDouble(prefix + ".RightReal");
+		ScaleFactor=b.getDouble(prefix + ".ScaleFactor");
+		TopImaginary=b.getDouble(prefix + ".TopImaginary");
+	}
+		
 	/** Called when the size of the view has changed. */
-	@Override public void onSizeChanged(int a, int b, int c, int d){
+	@Override public final void onSizeChanged(int a, int b, int c, int d){
 		System.out.println("onSizeChanged " + a + " " + b + " " + c + " " + d);
 	}
 		

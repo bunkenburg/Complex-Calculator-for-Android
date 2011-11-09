@@ -82,8 +82,11 @@
         <Key android:keyOutputText="-" android:keyLabel="-"/>
         <Key android:keyOutputText="!" android:keyLabel="!"/>
         <Key android:keyOutputText="z" android:keyLabel="z"/>
-        <!-- android:keyOutputText="=" 10 -->
-        <Key android:codes="61" android:keyLabel="="/>
+        <!-- 
+        	 android:keyOutputText="=" 10
+        	 android:codes="61" 
+       	-->
+        <Key android:codes="10" android:keyLabel="="/>
     </Row>
 
 </Keyboard>

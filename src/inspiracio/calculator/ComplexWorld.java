@@ -29,7 +29,7 @@ import inspiracio.widget.IMEEditText;
 import java.text.ParseException;
 
 import android.app.Activity;
-import android.inputmethodservice.InputMethodService;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.KeyEvent;
@@ -38,6 +38,7 @@ import android.view.View.OnKeyListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /** The activity for calculation. */
 public final class ComplexWorld extends Activity{
@@ -177,6 +178,7 @@ public final class ComplexWorld extends Activity{
         Editable editable=display.getText();
         String s=editable.toString();
         display.append(" = ");
+        String msg=null;
         try{
             SyntaxTree tree=SyntaxTree.parse(s);
             EC ec=tree.evaluate(null);
@@ -184,12 +186,21 @@ public final class ComplexWorld extends Activity{
             if(this.world!=null)
             	world.add(ec);
             return;
-        }catch(BugException bugexception){
-        	bugexception.printStackTrace();
-        }catch(PartialException partialexception){
-        	partialexception.printStackTrace();
-        }catch(ParseException parseexception){
-        	parseexception.printStackTrace();
+        }catch(BugException be){
+        	be.printStackTrace();
+        	msg=be.getLocalizedMessage();
+        }catch(PartialException pe){
+        	pe.printStackTrace();
+        	msg=pe.getLocalizedMessage();
+        	msg="Undefined: " + msg;
+        }catch(ParseException pse){
+        	pse.printStackTrace();
+        	msg=pse.getLocalizedMessage();
+        }
+        if(msg!=null){
+        	Context context = getApplicationContext();
+        	Toast toast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
+        	toast.show();
         }
     }
 

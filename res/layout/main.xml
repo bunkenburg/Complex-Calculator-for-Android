@@ -44,7 +44,7 @@
 		android:imeActionLabel="=" Seems to disable key 
 		android:digits=" !sinhcoshtanhconjoppReImlnexp^modargiepi()789*/456+-123=0.z"
 	-->
-	<EditText
+	<inspiracio.widget.IMEEditText
 		android:id="@+id/display" 
  		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent" 

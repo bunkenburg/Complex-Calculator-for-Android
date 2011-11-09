@@ -11,10 +11,13 @@
 		android:icon="@drawable/icon" 
 		android:label="@string/app_name"
 	>
+		<!-- 
+					android:windowSoftInputMode="stateUnspecified|adjustResize"	//normal
+		 -->
 		<activity
 			android:name=".ComplexWorld"
 			android:label="@string/app_name"
-			android:windowSoftInputMode="adjustResize"
+			android:windowSoftInputMode="stateAlwaysHidden"
 		>
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />

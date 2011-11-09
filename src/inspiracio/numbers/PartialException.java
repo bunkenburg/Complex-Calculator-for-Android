@@ -19,13 +19,10 @@ package inspiracio.numbers;
 
 import inspiracio.say.SayException;
 
-public class PartialException extends SayException {
+/** A partial function has been called outside its domain. */
+public final class PartialException extends SayException{
 	
-	static final long serialVersionUID = 0;
-
-
-    public PartialException(String s)
-    {
-        super(s);
-    }
+	/** Make a new partial exception. 
+	 * @param s The undefined expression, like "ln 0". */
+    public PartialException(String s){super(s);}
 }

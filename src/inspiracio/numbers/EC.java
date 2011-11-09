@@ -160,6 +160,7 @@ public final class EC implements Parcelable{
 
     //Methods --------------------------------------------------
     
+    /** @deprecated No clients */
     public EC acos()throws PartialException{
         throw new PartialException("EC.acos not implemented.");
     }
@@ -208,13 +209,15 @@ public final class EC implements Parcelable{
         if(ec.isFinite())
             return INFINITY;
         else
-            throw new PartialException("EC.add(EC): inf+inf");
+            throw new PartialException(infinityString + " + " + infinityString);
     }
 
+    /** @deprecated No clients */
     public EC asin()throws PartialException{
         throw new PartialException("EC.asin not implemented");
     }
 
+    /** @deprecated No clients */
     public EC atan()throws PartialException{
         throw new PartialException("EC.atan not implemented");
     }
@@ -235,7 +238,7 @@ public final class EC implements Parcelable{
             }
             catch(PartialException _ex) { }
         else
-            throw new PartialException("EC.cos(inf)");
+            throw new PartialException("cos " + infinityString);
         return ec;
     }
 
@@ -247,7 +250,7 @@ public final class EC implements Parcelable{
             }
             catch(PartialException _ex) { }
         else
-            throw new PartialException("EC.cosh(inf)");
+            throw new PartialException("cosh " + infinityString);
         return ec;
     }
 
@@ -255,7 +258,7 @@ public final class EC implements Parcelable{
         EC ec = null;
         if(isZero()){
             if(d == 0.0D)
-                throw new PartialException("EC.divide(double): 0/0");
+                throw new PartialException("0/0");
             ec = ZERO;
         } else if(finite){
             if(d == 0.0D)
@@ -264,7 +267,7 @@ public final class EC implements Parcelable{
                 ec = mkCartesian(re() / d, im() / d);
         } else{
             if(d == 0.0D)
-                throw new PartialException("EC.divide(double): inf/0");
+                throw new PartialException(infinityString + "/0");
             ec = INFINITY;
         }
         return ec;
@@ -274,11 +277,11 @@ public final class EC implements Parcelable{
         EC ec1 = null;
         if(isZero()){
             if(ec.isZero())
-                throw new PartialException("EC.divide: 0/0");
+                throw new PartialException("0/0");
             if(ec.isFinite())
                 ec1 = ZERO;
             else
-                throw new PartialException("EC.divide: 0/inf");
+                throw new PartialException("0/"+infinityString);
         } else if(isFinite()){
             if(ec.isZero())
                 ec1 = INFINITY;
@@ -291,11 +294,11 @@ public final class EC implements Parcelable{
             }
         } else{
             if(ec.isZero())
-                throw new PartialException("EC.divide: inf/0");
+                throw new PartialException(infinityString + "/0");
             if(ec.isFinite())
                 ec1 = INFINITY;
             else
-                throw new PartialException("EC.divide: inf/inf");
+                throw new PartialException(infinityString+"/"+infinityString);
         }
         return ec1;
     }
@@ -330,10 +333,10 @@ public final class EC implements Parcelable{
                     l1 *= l;
                 return mkReal(l1);
             } else{
-                throw new PartialException("too big");
+                throw new PartialException(l+"!");
             }
         } else{
-            throw new PartialException("negative");
+            throw new PartialException("(" + l + ")!");
         }
     }
 
@@ -356,7 +359,7 @@ public final class EC implements Parcelable{
     public EC ln()throws PartialException{
         if(isFinite()){
             if(isZero())
-                throw new PartialException("EC.ln(0)");
+                throw new PartialException("ln 0");
             else
                 return mkCartesian(Math.log(mod()), arg());
         } else{
@@ -370,9 +373,9 @@ public final class EC implements Parcelable{
             if(Math.abs(re() - (double)l) < EPSILON)
                 return l;
             else
-                throw new PartialException("not integer");
+                throw new PartialException(this + " not integer");
         } else{
-            throw new PartialException("not real");
+            throw new PartialException(this + " not real");
         }
     }
 
@@ -398,7 +401,7 @@ public final class EC implements Parcelable{
             if(ec.isFinite())
                 ec1 = ZERO;
             else
-                throw new PartialException("EC.multiply: 0*inf");
+                throw new PartialException("0*" + infinityString);
         } else if(isFinite()){
             if(ec.isZero())
                 ec1 = ZERO;
@@ -408,7 +411,7 @@ public final class EC implements Parcelable{
                 ec1 = INFINITY;
         } else{
             if(ec.isZero())
-                throw new PartialException("EC.multiply: fin*0");
+                throw new PartialException(infinityString + "*0");
             ec1 = INFINITY;
         }
         return ec1;
@@ -438,7 +441,7 @@ public final class EC implements Parcelable{
         if(x.isZero())
         	// 0^0 = undefined
             if(y.isZero())
-                throw new PartialException("EC.power(0,0)");
+                throw new PartialException("0^0");
         	// 0^y = 0
             else
                 return ZERO;
@@ -461,7 +464,7 @@ public final class EC implements Parcelable{
         }
         // inf^0 = undefined
         if(y.isZero())
-            throw new PartialException("EC.power(inf, 0)");
+            throw new PartialException(infinityString + "^0");
         // inf^y = inf
         else
             return INFINITY;
@@ -508,7 +511,7 @@ public final class EC implements Parcelable{
             }
             catch(PartialException _ex) { }
         else
-            throw new PartialException("EC.sin(inf)");
+            throw new PartialException("sin " + infinityString);
         return ec;
     }
 
@@ -520,7 +523,7 @@ public final class EC implements Parcelable{
             }
             catch(PartialException _ex) { }
         else
-            throw new PartialException("EC.sinh(inf)");
+            throw new PartialException("sinh "+infinityString);
         return ec;
     }
 
@@ -555,7 +558,7 @@ public final class EC implements Parcelable{
         if(ec.isFinite())
             return INFINITY;
         else
-            throw new PartialException("EC.subtract: inf-inf");
+            throw new PartialException(infinityString + "-" + infinityString);
     }
 
     public EC tan()throws PartialException{

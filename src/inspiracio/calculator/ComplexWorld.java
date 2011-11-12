@@ -30,6 +30,7 @@ import java.text.ParseException;
 
 import android.app.Activity;
 import android.content.Context;
+import android.inputmethodservice.InputMethodService;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.KeyEvent;

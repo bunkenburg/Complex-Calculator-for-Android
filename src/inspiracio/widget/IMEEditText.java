@@ -68,17 +68,15 @@ public class IMEEditText extends EditText{
 	 * Call once, before anything else. */
 	public final void setInputMethodService(InputMethodService ims){
 		this.ims=ims;
-		
-		//Tell the superclass that it's not editable: we do all the editing.
-		//super.set
 	}
 	
 	//Methods --------------------------------------------
 	
 	/** @see android.widget.TextView#onCreateInputConnection(android.view.inputmethod.EditorInfo)
 	 */
-	@Override public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+	@Override public final InputConnection onCreateInputConnection(EditorInfo outAttrs) {
 		InputConnection ic=super.onCreateInputConnection(outAttrs);//Called by InputMethodManager.startInputInner()
+		ic=new DirectInputConnection(this, true);
 		return ic;
 	}
 

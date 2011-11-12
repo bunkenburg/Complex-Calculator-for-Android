@@ -75,14 +75,19 @@ public class IMEEditText extends EditText{
 	/** @see android.widget.TextView#onCreateInputConnection(android.view.inputmethod.EditorInfo)
 	 */
 	@Override public final InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-		InputConnection ic=super.onCreateInputConnection(outAttrs);//Called by InputMethodManager.startInputInner()
-		ic=new DirectInputConnection(this, true);
+		InputConnection ic=super.onCreateInputConnection(outAttrs);//Called by InputMethodManager.startInputInner(). Returns null id onCheckIsTextEditor returns false
+		View targetView=this;
+		boolean fullEditor=true;
+		DirectInputConnection dic=new DirectInputConnection(targetView, fullEditor);
+		dic.setInputMethodService(ims);
+		dic.setInputType(inputType);
+		ic=dic;
 		return ic;
 	}
 
 	/** What exactly is this used for? 
 	 * This is a text editor, but I don't want the system to display a soft keyboard. */
-	@Override public boolean onCheckIsTextEditor(){
+	@Override public final boolean onCheckIsTextEditor(){
 		return false;
 	}
 	

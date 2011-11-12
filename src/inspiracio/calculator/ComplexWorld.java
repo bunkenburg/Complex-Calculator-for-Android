@@ -89,7 +89,8 @@ public final class ComplexWorld extends Activity{
         this.world=(WorldRepresentation)this.findViewById(R.id.canvas);
         this.world.set(this);
         
-        IMEEditText it=(IMEEditText)this.findViewById(R.id.display);
+        View v=this.findViewById(R.id.display);
+        IMEEditText it=(IMEEditText)v;
         InputMethodService ims=new SoftKeyboard();
         it.setInputMethodService(ims);
         this.display=it;

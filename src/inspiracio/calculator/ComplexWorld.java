@@ -30,7 +30,6 @@ import java.text.ParseException;
 
 import android.app.Activity;
 import android.content.Context;
-import android.inputmethodservice.InputMethodService;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.KeyEvent;
@@ -91,7 +90,7 @@ public final class ComplexWorld extends Activity{
         
         View v=this.findViewById(R.id.display);
         IMEEditText it=(IMEEditText)v;
-        InputMethodService ims=new SoftKeyboard();
+        SoftKeyboard ims=new SoftKeyboard();
         it.setInputMethodService(ims);
         this.display=it;
         

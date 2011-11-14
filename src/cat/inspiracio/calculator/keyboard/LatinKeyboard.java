@@ -1,20 +1,21 @@
-/*
- * Copyright (C) 2008-2009 Google Inc.
+/*	Copyright 2011 Alexander Bunkenburg alex@inspiracio.com
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * This file is part of Complex Calculator for Android.
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Complex Calculator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
-
-package com.example.android.softkeyboard;
+ * Complex Calculator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Complex Calculator for Android. If not, see <http://www.gnu.org/licenses/>.
+ * */
+package cat.inspiracio.calculator.keyboard;
 
 import inspiracio.calculator.R;
 import android.content.Context;
@@ -23,26 +24,29 @@ import android.content.res.XmlResourceParser;
 import android.inputmethodservice.Keyboard;
 import android.view.inputmethod.EditorInfo;
 
-public class LatinKeyboard extends Keyboard {
+public final class LatinKeyboard extends Keyboard{
 
+	//State -----------------------------------------
+	
     private Key mEnterKey;
     
+    //Constructors ----------------------------------
+    
+    /** Called from SoftKeyboard.onInitializeInterface. */
     public LatinKeyboard(Context context, int xmlLayoutResId) {
         super(context, xmlLayoutResId);
     }
 
-    public LatinKeyboard(Context context, int layoutTemplateResId, 
-            CharSequence characters, int columns, int horizontalPadding) {
+    public LatinKeyboard(Context context, int layoutTemplateResId, CharSequence characters, int columns, int horizontalPadding) {
         super(context, layoutTemplateResId, characters, columns, horizontalPadding);
     }
 
-    @Override
-    protected Key createKeyFromXml(Resources res, Row parent, int x, int y, 
-            XmlResourceParser parser) {
+    //Methods ----------------------------------------
+    
+    @Override protected Key createKeyFromXml(Resources res, Row parent, int x, int y,  XmlResourceParser parser) {
         Key key = new LatinKey(res, parent, x, y, parser);
-        if (key.codes[0] == 10) {
+        if (key.codes[0] == 10)
             mEnterKey = key;
-        }
         return key;
     }
     
@@ -94,8 +98,7 @@ public class LatinKeyboard extends Keyboard {
          * Overriding this method so that we can reduce the target area for the key that
          * closes the keyboard. 
          */
-        @Override
-        public boolean isInside(int x, int y) {
+        @Override public boolean isInside(int x, int y) {
             return super.isInside(x, codes[0] == KEYCODE_CANCEL ? y - 10 : y);
         }
     }

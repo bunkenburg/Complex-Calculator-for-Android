@@ -11,27 +11,32 @@ import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 
 /** An input connection that connects directly to the IME. */
-class DirectInputConnection extends BaseInputConnection {
+final class DirectInputConnection extends BaseInputConnection {
 
 	//State --------------------------------------------------
 	
-	private View targetView;
+	private IMEEditText editText;
 	private boolean fullEditor;
 	private InputMethodService ims;
 	private int inputType;
 	
 	//Constructors -------------------------------------------
 	
-	DirectInputConnection(View targetView, boolean fullEditor) {
+	/** Makes a direct input connection. 
+	 * @param targetView The IMEEditText that we're connecting to an IMS. 
+	 * @param fullEditor
+	 * */
+	DirectInputConnection(IMEEditText targetView, boolean fullEditor) {
 		super(targetView, fullEditor);
-		this.targetView=targetView;
+		this.editText=targetView;
 		this.fullEditor=fullEditor;
 	}
 
 	//Accessors -----------------------------------------------
 	
-	void setInputMethodService(InputMethodService ims){this.ims=ims;}
-	void setInputType(int inputType){this.inputType=inputType;}
+	final IMEEditText getEditText(){return this.editText;}
+	final void setInputMethodService(InputMethodService ims){this.ims=ims;}
+	final void setInputType(int inputType){this.inputType=inputType;}
 	
 	//Methods -----------------------------------------------
 	
@@ -114,7 +119,7 @@ class DirectInputConnection extends BaseInputConnection {
 	 * */
 	@Override public boolean deleteSurroundingText(int leftLength, int rightLength){
 		boolean b=super.deleteSurroundingText(leftLength, rightLength);
-		return b;
+		throw new RuntimeException("not implemented");
 	}
 
 	/** Tell the editor that you are done with a batch edit previously 
@@ -178,11 +183,12 @@ class DirectInputConnection extends BaseInputConnection {
 	 * subclasses that are real text editors should override this and supply 
 	 * their own.
 	 * 
-	 * XXX Must implement this.
 	 * */
 	@Override public Editable getEditable(){
-		Editable e=super.getEditable();//null?
-		e=new DirectEditable();
+		Editable e=super.getEditable();//Fake SpannableStringBuilder.
+		DirectEditable de=new DirectEditable();
+		de.setInputConnection(this);
+		e=de;
 		return e;
 	}
 
@@ -198,6 +204,8 @@ class DirectInputConnection extends BaseInputConnection {
 	 * 
 	 * The default implementation always returns null.
 	 * 
+	 * Called by ExtractedTextRequest(IInputConnectionWrapper).executeMessage(Message), IInputConnectionWrapper$MyHandler.handleMessage(Message).
+	 * 
 	 * XXX Must implement this.
 	 * 
 	 * @param request 	Description of how the text should be returned.
@@ -206,7 +214,17 @@ class DirectInputConnection extends BaseInputConnection {
 	 * */
 	@Override public ExtractedText getExtractedText(ExtractedTextRequest request, int flags){
 		ExtractedText et=super.getExtractedText(request, flags);//null
-		return et;//Implemented extracted text
+		//I assume the ExtractedText is a value object, a snapshot of the text.
+		Editable editable=this.editText.getEditableText();
+		et=new ExtractedText();
+		//flags
+		//partialEndOffset
+		//partialStartOffset
+		et.selectionEnd=this.editText.getSelectionEnd();
+		et.selectionStart=this.editText.getSelectionStart();
+		et.startOffset=0;
+		et.text=this.editText.getText();
+		return et;
 	}
 
 	/** Get n characters of text after the current cursor position.
@@ -330,7 +348,8 @@ class DirectInputConnection extends BaseInputConnection {
 	}
 
 	@Override public boolean setSelection(int start, int end) {
-		return super.setSelection(start, end);
+		boolean b=super.setSelection(start, end);
+		return b;
 	}
 
 }

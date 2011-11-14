@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.example.android.softkeyboard;
+package cat.inspiracio.calculator.keyboard;
 
 import android.content.Context;
 import android.content.res.Resources;

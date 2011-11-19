@@ -27,7 +27,8 @@
 
 	<LinearLayout
 		android:layout_height="wrap_content"
-		android:id="@+id/buttonPanel" android:layout_width="fill_parent"
+		android:id="@+id/buttonPanel"
+		android:layout_width="fill_parent"
 		android:layout_alignParentTop="true"
 	>
 		<!--ToggleButton android:text="Sphere" android:id="@+id/toggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></ToggleButton-->
@@ -38,14 +39,14 @@
 	<!--Could also use:
 	
 		Don't know how to make this work:
-		android:inputMethod="inspiracio.calculator.SoftKeyboard"
+		android:inputMethod="cat.inspiracio.calculator.SoftKeyboard"
 		How can I make CC use its own input method service?
 		
 		android:scrollHorizontally="true"
 		android:imeActionLabel="=" Seems to disable key 
 		android:digits=" !sinhcoshtanhconjoppReImlnexp^modargiepi()789*/456+-123=0.z"
 	-->
-	<inspiracio.widget.IMEEditText
+	<cat.inspiracio.widget.IMEEditText
 		android:id="@+id/display" 
  		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent" 
@@ -53,7 +54,7 @@
 		android:inputType="text|textNoSuggestions|textAutoComplete"
 	/>
 
-	<inspiracio.calculator.Plane
+	<cat.inspiracio.calculator.Plane
 		android:id="@+id/canvas" 
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent" 

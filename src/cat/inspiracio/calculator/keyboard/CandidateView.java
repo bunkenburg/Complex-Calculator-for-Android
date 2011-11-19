@@ -27,10 +27,11 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import inspiracio.calculator.R;
-import inspiracio.calculator.SoftKeyboard;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cat.inspiracio.calculator.SoftKeyboard;
 
 public class CandidateView extends View {
 

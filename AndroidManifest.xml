@@ -15,7 +15,7 @@
 					android:windowSoftInputMode="stateUnspecified|adjustResize"	//normal
 		 -->
 		<activity
-			android:name=".ComplexWorld"
+			android:name="cat.inspiracio.calculator.ComplexWorld"
 			android:label="@string/app_name"
 			android:windowSoftInputMode="stateAlwaysHidden"
 		>
@@ -26,7 +26,7 @@
 		</activity>
 			
 		<service
-			android:name="cat.inspiracio.calculator.keyboard.SoftKeyboard"
+			android:name="cat.cat.inspiracio.calculator.keyboard.SoftKeyboard"
 			android:permission="android.permission.BIND_INPUT_METHOD"
 		>
 			<intent-filter><action android:name="android.view.InputMethod" /></intent-filter>

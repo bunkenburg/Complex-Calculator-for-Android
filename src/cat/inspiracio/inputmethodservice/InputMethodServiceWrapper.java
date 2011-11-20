@@ -18,13 +18,11 @@
 package cat.inspiracio.inputmethodservice;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -79,16 +77,18 @@ public class InputMethodServiceWrapper extends InputMethodService{
 	//Constructors ----------------------------------------------------------------------
 	
 	/** Wrap this input method service. */
-	protected InputMethodServiceWrapper(InputMethodService ims){
+	public InputMethodServiceWrapper(InputMethodService ims){
 		this.ims=ims;
 		this.context=ims;
 	}
 	
 	//Accessors -------------------------------------------------------------------------
+	
+	public void setContext(Context context){this.context=context;}
+	public Context getContext(){return context;}
+	@Override public Context getBaseContext(){return context;}
+	
 	//InputMethodService methods --------------------------------------------------------
-	//AbstractInputMethodService methods ------------------------------------------------
-	//Service methods -------------------------------------------------------------------
-	//Context methods -------------------------------------------------------------------
 	
 	@Override public int getCandidatesHiddenVisibility(){return ims.getCandidatesHiddenVisibility();}
 	@Override public InputBinding getCurrentInputBinding(){return ims.getCurrentInputBinding();}
@@ -110,11 +110,12 @@ public class InputMethodServiceWrapper extends InputMethodService{
 	@Override public void onComputeInsets(Insets outInsets){ims.onComputeInsets(outInsets);}
 	@Override public void onConfigurationChanged(Configuration newConfig){ims.onConfigurationChanged(newConfig);}
 	@Override public void onConfigureWindow(Window win, boolean isFullscreen,boolean isCandidatesOnly){ims.onConfigureWindow(win, isFullscreen, isCandidatesOnly);}
+	
+	/**  */
 	@Override public void onCreate(){ims.onCreate();}
+
 	@Override public View onCreateCandidatesView(){return ims.onCreateCandidatesView();}
 	@Override public View onCreateExtractTextView(){return ims.onCreateExtractTextView();}
-	@Override public AbstractInputMethodImpl onCreateInputMethodInterface(){return ims.onCreateInputMethodInterface();}
-	@Override public AbstractInputMethodSessionImpl onCreateInputMethodSessionInterface(){return ims.onCreateInputMethodSessionInterface();}
 	@Override public View onCreateInputView(){return ims.onCreateInputView();}
 	@Override public void onDestroy(){ims.onDestroy();}
 	@Override public void onDisplayCompletions(CompletionInfo[] completions){ims.onDisplayCompletions(completions);}
@@ -161,81 +162,103 @@ public class InputMethodServiceWrapper extends InputMethodService{
 	@Override public void switchInputMethod(String id){ims.switchInputMethod(id);}
 	@Override public void updateFullscreenMode(){ims.updateFullscreenMode();}
 	@Override public void updateInputViewShown(){ims.updateInputViewShown();}
+	
+	//AbstractInputMethodService methods ------------------------------------------------
+
 	@Override public DispatcherState getKeyDispatcherState(){return ims.getKeyDispatcherState();}
+	@Override public AbstractInputMethodImpl onCreateInputMethodInterface(){return ims.onCreateInputMethodInterface();}
+	@Override public AbstractInputMethodSessionImpl onCreateInputMethodSessionInterface(){return ims.onCreateInputMethodSessionInterface();}
+	
+	//Service methods -------------------------------------------------------------------
+
 	//@Override protected void finalize() throws Throwable{ims.finalize();}
 	@Override public void onLowMemory(){ims.onLowMemory();}
 	@Override public void onRebind(Intent intent){ims.onRebind(intent);}
 	@Override public void onStart(Intent intent, int startId){ims.onStart(intent, startId);}
 	@Override public int onStartCommand(Intent intent, int flags, int startId){return ims.onStartCommand(intent, flags, startId);}
 	@Override public boolean onUnbind(Intent intent){return ims.onUnbind(intent);}
-	//@Override protected void attachBaseContext(Context base){ims.attachBaseContext(base);}
-	@Override public boolean bindService(Intent service, ServiceConnection conn, int flags){return ims.bindService(service, conn, flags);}
-	@Override public int checkCallingOrSelfPermission(String permission){return ims.checkCallingOrSelfPermission(permission);}
-	@Override public int checkCallingOrSelfUriPermission(Uri uri, int modeFlags){return ims.checkCallingOrSelfUriPermission(uri, modeFlags);}
-	@Override public int checkCallingPermission(String permission){return ims.checkCallingPermission(permission);}
-	@Override public int checkCallingUriPermission(Uri uri, int modeFlags){return ims.checkCallingUriPermission(uri, modeFlags);}
-	@Override public int checkPermission(String permission, int pid, int uid){return ims.checkPermission(permission, pid, uid);}
-	@Override public int checkUriPermission(Uri uri, int pid, int uid, int modeFlags){return ims.checkUriPermission(uri, pid, uid, modeFlags);}
-	@Override public int checkUriPermission(Uri uri, String readPermission,String writePermission, int pid, int uid, int modeFlags){return ims.checkUriPermission(uri, readPermission, writePermission, pid, uid,modeFlags);}
-	@Override public void clearWallpaper() throws IOException{ims.clearWallpaper();}
-	@Override public Context createPackageContext(String packageName, int flags)throws NameNotFoundException{return ims.createPackageContext(packageName, flags);}
-	@Override public String[] databaseList(){return ims.databaseList();}
-	@Override public boolean deleteDatabase(String name){return ims.deleteDatabase(name);}
-	@Override public boolean deleteFile(String name){return ims.deleteFile(name);}
-	@Override public void enforceCallingOrSelfPermission(String permission, String message){ims.enforceCallingOrSelfPermission(permission, message);}
-	@Override public void enforceCallingOrSelfUriPermission(Uri uri, int modeFlags,String message){ims.enforceCallingOrSelfUriPermission(uri, modeFlags, message);}
-	@Override public void enforceCallingPermission(String permission, String message){ims.enforceCallingPermission(permission, message);}
-	@Override public void enforceCallingUriPermission(Uri uri, int modeFlags,String message){ims.enforceCallingUriPermission(uri, modeFlags, message);}
-	@Override public void enforcePermission(String permission, int pid, int uid,String message){ims.enforcePermission(permission, pid, uid, message);}
-	@Override public void enforceUriPermission(Uri uri, int pid, int uid, int modeFlags,String message){ims.enforceUriPermission(uri, pid, uid, modeFlags, message);}
-	@Override public void enforceUriPermission(Uri uri, String readPermission,String writePermission, int pid, int uid, int modeFlags,String message) {ims.enforceUriPermission(uri, readPermission, writePermission, pid, uid,modeFlags, message);}
-	@Override public String[] fileList(){return ims.fileList();}
-	@Override public Context getApplicationContext(){return ims.getApplicationContext();}
-	@Override public ApplicationInfo getApplicationInfo(){return ims.getApplicationInfo();}
-	@Override public AssetManager getAssets(){return ims.getAssets();}
-	@Override public Context getBaseContext(){return ims.getBaseContext();}
-	@Override public File getCacheDir(){return ims.getCacheDir();}
-	@Override public ClassLoader getClassLoader(){return ims.getClassLoader();}
-	@Override public ContentResolver getContentResolver(){return ims.getContentResolver();}
-	@Override public File getDatabasePath(String name){return ims.getDatabasePath(name);}
-	@Override public File getDir(String name, int mode){return ims.getDir(name, mode);}
-	@Override public File getFileStreamPath(String name){return ims.getFileStreamPath(name);}
-	@Override public File getFilesDir(){return ims.getFilesDir();}
-	@Override public Looper getMainLooper(){return ims.getMainLooper();}
-	@Override public String getPackageCodePath(){return ims.getPackageCodePath();}
-	@Override public PackageManager getPackageManager(){return ims.getPackageManager();}
-	@Override public String getPackageName(){return ims.getPackageName();}
-	@Override public String getPackageResourcePath(){return ims.getPackageResourcePath();}
-	@Override public Resources getResources(){return ims.getResources();}
-	@Override public SharedPreferences getSharedPreferences(String name, int mode){return ims.getSharedPreferences(name, mode);}
-	@Override public Object getSystemService(String name){return ims.getSystemService(name);}
-	@Override public Theme getTheme(){return ims.getTheme();}
-	@Override public Drawable getWallpaper(){return ims.getWallpaper();}
-	@Override public int getWallpaperDesiredMinimumHeight(){return ims.getWallpaperDesiredMinimumHeight();}
-	@Override public int getWallpaperDesiredMinimumWidth(){return ims.getWallpaperDesiredMinimumWidth();}
-	@Override public void grantUriPermission(String toPackage, Uri uri, int modeFlags){ims.grantUriPermission(toPackage, uri, modeFlags);}
-	@Override public boolean isRestricted(){return ims.isRestricted();}
-	@Override public FileInputStream openFileInput(String name)throws FileNotFoundException{return ims.openFileInput(name);}
-	@Override public FileOutputStream openFileOutput(String name, int mode)throws FileNotFoundException{return ims.openFileOutput(name, mode);}
-	@Override public SQLiteDatabase openOrCreateDatabase(String name, int mode,CursorFactory factory){return ims.openOrCreateDatabase(name, mode, factory);}
-	@Override public Drawable peekWallpaper(){return ims.peekWallpaper();}
-	@Override public Intent registerReceiver(BroadcastReceiver receiver,IntentFilter filter){return ims.registerReceiver(receiver, filter);}
-	@Override public Intent registerReceiver(BroadcastReceiver receiver,IntentFilter filter, String broadcastPermission, Handler scheduler){return ims.registerReceiver(receiver, filter, broadcastPermission, scheduler);}
-	@Override public void removeStickyBroadcast(Intent intent){ims.removeStickyBroadcast(intent);}
-	@Override public void revokeUriPermission(Uri uri, int modeFlags){ims.revokeUriPermission(uri, modeFlags);}
-	@Override public void sendBroadcast(Intent intent){ims.sendBroadcast(intent);}
-	@Override public void sendBroadcast(Intent intent, String receiverPermission){ims.sendBroadcast(intent, receiverPermission);}
-	@Override public void sendOrderedBroadcast(Intent intent, String receiverPermission){ims.sendOrderedBroadcast(intent, receiverPermission);}
-	@Override public void sendOrderedBroadcast(Intent intent, String receiverPermission,BroadcastReceiver resultReceiver, Handler scheduler,int initialCode, String initialData, Bundle initialExtras){ims.sendOrderedBroadcast(intent, receiverPermission, resultReceiver,scheduler, initialCode, initialData, initialExtras);}
-	@Override public void sendStickyBroadcast(Intent intent){ims.sendStickyBroadcast(intent);}
-	@Override public void sendStickyOrderedBroadcast(Intent intent,BroadcastReceiver resultReceiver, Handler scheduler,int initialCode, String initialData, Bundle initialExtras){ims.sendStickyOrderedBroadcast(intent, resultReceiver, scheduler,initialCode, initialData, initialExtras);}
-	@Override public void setWallpaper(Bitmap bitmap) throws IOException{ims.setWallpaper(bitmap);}
-	@Override public void setWallpaper(InputStream data) throws IOException{ims.setWallpaper(data);}
-	@Override public void startActivity(Intent intent){ims.startActivity(intent);}
-	@Override public boolean startInstrumentation(ComponentName className,String profileFile, Bundle arguments){return ims.startInstrumentation(className, profileFile, arguments);}
-	@Override public void startIntentSender(IntentSender intent, Intent fillInIntent,int flagsMask, int flagsValues, int extraFlags)throws SendIntentException {ims.startIntentSender(intent, fillInIntent, flagsMask, flagsValues,extraFlags);}
-	@Override public ComponentName startService(Intent service) {return ims.startService(service);}
-	@Override public boolean stopService(Intent name){return ims.stopService(name);}
-	@Override public void unbindService(ServiceConnection conn){ims.unbindService(conn);}
+	
+	//ContextWrapper methods -------------------------------------------------------------------
+
+	/** I'm not sure how to implement. */
+	@Override public String getPackageCodePath(){
+		return ims.getPackageCodePath();
+		//return context.getPackageCodePath();
+	}
+
+	/** I'm not sure how to implement. */
+	@Override public String getPackageResourcePath(){
+		return ims.getPackageResourcePath();
+		//return context.getPackageResourcePath();
+	}
+
+	//Context methods -------------------------------------------------------------------
+
+	//@Override protected void attachBaseContext(Context base){context.attachBaseContext(base);}
+	@Override public boolean bindService(Intent service, ServiceConnection conn, int flags){return context.bindService(service, conn, flags);}
+	@Override public int checkCallingOrSelfPermission(String permission){return context.checkCallingOrSelfPermission(permission);}
+	@Override public int checkCallingOrSelfUriPermission(Uri uri, int modeFlags){return context.checkCallingOrSelfUriPermission(uri, modeFlags);}
+	@Override public int checkCallingPermission(String permission){return context.checkCallingPermission(permission);}
+	@Override public int checkCallingUriPermission(Uri uri, int modeFlags){return context.checkCallingUriPermission(uri, modeFlags);}
+	@Override public int checkPermission(String permission, int pid, int uid){return context.checkPermission(permission, pid, uid);}
+	@Override public int checkUriPermission(Uri uri, int pid, int uid, int modeFlags){return context.checkUriPermission(uri, pid, uid, modeFlags);}
+	@Override public int checkUriPermission(Uri uri, String readPermission,String writePermission, int pid, int uid, int modeFlags){return context.checkUriPermission(uri, readPermission, writePermission, pid, uid,modeFlags);}
+	@Override public void clearWallpaper() throws IOException{context.clearWallpaper();}
+	@Override public Context createPackageContext(String packageName, int flags)throws NameNotFoundException{return context.createPackageContext(packageName, flags);}
+	@Override public String[] databaseList(){return context.databaseList();}
+	@Override public boolean deleteDatabase(String name){return context.deleteDatabase(name);}
+	@Override public boolean deleteFile(String name){return context.deleteFile(name);}
+	@Override public void enforceCallingOrSelfPermission(String permission, String message){context.enforceCallingOrSelfPermission(permission, message);}
+	@Override public void enforceCallingOrSelfUriPermission(Uri uri, int modeFlags,String message){context.enforceCallingOrSelfUriPermission(uri, modeFlags, message);}
+	@Override public void enforceCallingPermission(String permission, String message){context.enforceCallingPermission(permission, message);}
+	@Override public void enforceCallingUriPermission(Uri uri, int modeFlags,String message){context.enforceCallingUriPermission(uri, modeFlags, message);}
+	@Override public void enforcePermission(String permission, int pid, int uid,String message){context.enforcePermission(permission, pid, uid, message);}
+	@Override public void enforceUriPermission(Uri uri, int pid, int uid, int modeFlags,String message){context.enforceUriPermission(uri, pid, uid, modeFlags, message);}
+	@Override public void enforceUriPermission(Uri uri, String readPermission,String writePermission, int pid, int uid, int modeFlags,String message) {context.enforceUriPermission(uri, readPermission, writePermission, pid, uid,modeFlags, message);}
+	@Override public String[] fileList(){return context.fileList();}
+	@Override public Context getApplicationContext(){return context.getApplicationContext();}
+	@Override public ApplicationInfo getApplicationInfo(){return context.getApplicationInfo();}
+	@Override public AssetManager getAssets(){return context.getAssets();}
+	@Override public File getCacheDir(){return context.getCacheDir();}
+	@Override public ClassLoader getClassLoader(){return context.getClassLoader();}
+	@Override public ContentResolver getContentResolver(){return context.getContentResolver();}
+	@Override public File getDatabasePath(String name){return context.getDatabasePath(name);}
+	@Override public File getDir(String name, int mode){return context.getDir(name, mode);}
+	@Override public File getFileStreamPath(String name){return context.getFileStreamPath(name);}
+	@Override public File getFilesDir(){return context.getFilesDir();}
+	@Override public Looper getMainLooper(){return context.getMainLooper();}
+	@Override public PackageManager getPackageManager(){return context.getPackageManager();}
+	@Override public String getPackageName(){return context.getPackageName();}
+	@Override public Resources getResources(){return context.getResources();}
+	@Override public SharedPreferences getSharedPreferences(String name, int mode){return context.getSharedPreferences(name, mode);}
+	@Override public Object getSystemService(String name){return context.getSystemService(name);}
+	@Override public Theme getTheme(){return context.getTheme();}
+	@Override public Drawable getWallpaper(){return context.getWallpaper();}
+	@Override public int getWallpaperDesiredMinimumHeight(){return context.getWallpaperDesiredMinimumHeight();}
+	@Override public int getWallpaperDesiredMinimumWidth(){return context.getWallpaperDesiredMinimumWidth();}
+	@Override public void grantUriPermission(String toPackage, Uri uri, int modeFlags){context.grantUriPermission(toPackage, uri, modeFlags);}
+	@Override public boolean isRestricted(){return context.isRestricted();}
+	@Override public FileInputStream openFileInput(String name)throws FileNotFoundException{return context.openFileInput(name);}
+	@Override public FileOutputStream openFileOutput(String name, int mode)throws FileNotFoundException{return context.openFileOutput(name, mode);}
+	@Override public SQLiteDatabase openOrCreateDatabase(String name, int mode,CursorFactory factory){return context.openOrCreateDatabase(name, mode, factory);}
+	@Override public Drawable peekWallpaper(){return context.peekWallpaper();}
+	@Override public Intent registerReceiver(BroadcastReceiver receiver,IntentFilter filter){return context.registerReceiver(receiver, filter);}
+	@Override public Intent registerReceiver(BroadcastReceiver receiver,IntentFilter filter, String broadcastPermission, Handler scheduler){return context.registerReceiver(receiver, filter, broadcastPermission, scheduler);}
+	@Override public void removeStickyBroadcast(Intent intent){context.removeStickyBroadcast(intent);}
+	@Override public void revokeUriPermission(Uri uri, int modeFlags){context.revokeUriPermission(uri, modeFlags);}
+	@Override public void sendBroadcast(Intent intent){context.sendBroadcast(intent);}
+	@Override public void sendBroadcast(Intent intent, String receiverPermission){context.sendBroadcast(intent, receiverPermission);}
+	@Override public void sendOrderedBroadcast(Intent intent, String receiverPermission){context.sendOrderedBroadcast(intent, receiverPermission);}
+	@Override public void sendOrderedBroadcast(Intent intent, String receiverPermission,BroadcastReceiver resultReceiver, Handler scheduler,int initialCode, String initialData, Bundle initialExtras){context.sendOrderedBroadcast(intent, receiverPermission, resultReceiver,scheduler, initialCode, initialData, initialExtras);}
+	@Override public void sendStickyBroadcast(Intent intent){context.sendStickyBroadcast(intent);}
+	@Override public void sendStickyOrderedBroadcast(Intent intent,BroadcastReceiver resultReceiver, Handler scheduler,int initialCode, String initialData, Bundle initialExtras){context.sendStickyOrderedBroadcast(intent, resultReceiver, scheduler,initialCode, initialData, initialExtras);}
+	@Override public void setWallpaper(Bitmap bitmap) throws IOException{context.setWallpaper(bitmap);}
+	@Override public void setWallpaper(InputStream data) throws IOException{context.setWallpaper(data);}
+	@Override public void startActivity(Intent intent){context.startActivity(intent);}
+	@Override public boolean startInstrumentation(ComponentName className,String profileFile, Bundle arguments){return context.startInstrumentation(className, profileFile, arguments);}
+	@Override public void startIntentSender(IntentSender intent, Intent fillInIntent,int flagsMask, int flagsValues, int extraFlags)throws SendIntentException {context.startIntentSender(intent, fillInIntent, flagsMask, flagsValues,extraFlags);}
+	@Override public ComponentName startService(Intent service) {return context.startService(service);}
+	@Override public boolean stopService(Intent name){return context.stopService(name);}
+	@Override public void unbindService(ServiceConnection conn){context.unbindService(conn);}
 	@Override public void unregisterReceiver(BroadcastReceiver receiver){ims.unregisterReceiver(receiver);}	
 }

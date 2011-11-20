@@ -33,7 +33,7 @@ public final class LatinKeyboard extends Keyboard{
     //Constructors ----------------------------------
     
     /** Called from SoftKeyboard.onInitializeInterface. */
-    public LatinKeyboard(Context context, int xmlLayoutResId) {
+    public LatinKeyboard(Context context, int xmlLayoutResId){
         super(context, xmlLayoutResId);
     }
 

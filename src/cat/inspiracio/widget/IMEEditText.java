@@ -1,9 +1,9 @@
 package cat.inspiracio.widget;
 
-import cat.inspiracio.calculator.SoftKeyboard;
 import inspiracio.calculator.R;
 import android.app.Activity;
 import android.content.Context;
+import android.inputmethodservice.InputMethodService;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +11,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import cat.inspiracio.calculator.SoftKeyboard;
+import cat.inspiracio.inputmethodservice.InputMethodServiceWrapper;
 
 /** Like android.widget.EditText except that it can use a specific IME
  * instead of the one configured in the system. */
@@ -21,7 +23,7 @@ public class IMEEditText extends EditText{
 	//State ----------------------------------------------
 	
 	/** Use this IME instead of the one configured in the system. */
-	private SoftKeyboard ims;
+	private DirectInputMethodService ims;
 	
 	/** The input type the client asked for. */
 	private int inputType;
@@ -30,6 +32,9 @@ public class IMEEditText extends EditText{
 	
 	/** If a client sets a click listener, it goes here. */
 	private OnClickListener clickListener;
+	
+	/** If a client sets an OnKeyListener, it goes here. */
+	private OnKeyListener onKeyListener;
 	
 	//Constructors ---------------------------------------
 	
@@ -74,18 +79,25 @@ public class IMEEditText extends EditText{
 	/** Sets the IME to use with this EditText. 
 	 * Call once, before anything else.
 	 * Wraps the input method service and overrides some of its methods. */
-	public final void setInputMethodService(SoftKeyboard ims){
-		//XXX wrap
-		this.ims=ims;
+	public final void setInputMethodService(InputMethodService ims){
 		Context c=this.getContext();
-		this.ims.setContext(c);
-		//this.ims.onCreate();//Should call this, but super.onCreate() fails because its context is no good.
+		InputMethodServiceWrapper w=new InputMethodServiceWrapper(ims);
+		w.setContext(c);
+		DirectInputMethodService d=new SoftKeyboard();//Ignores argument
+		d.setContext(c);
+		this.ims=d;
+		this.ims.onCreate();//Should call this, but super.onCreate() fails because its context is no good.
 		this.ims.onInitializeInterface();
 	}
 
-	@Override public void setOnClickListener(OnClickListener l){
-		this.clickListener=l;
+	@Override public final void setOnClickListener(OnClickListener l){this.clickListener=l;}
+	
+	@Override public final void setOnKeyListener(OnKeyListener l){
+		super.setOnKeyListener(l);
+		this.onKeyListener=l;
 	}
+	
+	public final OnKeyListener getOnKeyListener(){return this.onKeyListener;}
 	
 	//Helpers --------------------------------------------
 	
@@ -107,7 +119,7 @@ public class IMEEditText extends EditText{
 		//Make a vertical relative layout with two subviews:
 		//Everything in the activity, but shrunk,
 		//and the keyboard's view.
-		Context context=getContext();// gives the activity.
+		Context context=this.getContext();// gives the activity.
 		Activity activity=(Activity)context;
 		//Window window=activity.getWindow();
 		//From the activity, we can get the window. From there, we can remove everything, shrink it, and put it back, above a keyboard.
@@ -147,7 +159,7 @@ public class IMEEditText extends EditText{
 	@Override public final boolean onCheckIsTextEditor(){
 		return false;
 	}
-	
+		
 	//Helpers -------------------------------------------
 	
 	void say(Object o){

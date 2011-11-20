@@ -27,7 +27,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.text.method.MetaKeyKeyListener;
@@ -41,12 +40,16 @@ import android.view.inputmethod.InputConnection;
 import cat.inspiracio.calculator.keyboard.CandidateView;
 import cat.inspiracio.calculator.keyboard.LatinKeyboard;
 import cat.inspiracio.calculator.keyboard.LatinKeyboardView;
+import cat.inspiracio.widget.DirectInputMethodService;
 
-public final class SoftKeyboard extends InputMethodService implements KeyboardView.OnKeyboardActionListener {
-    static final boolean DEBUG = false;
-
-    //State ----------------------------------------------------
+/** Made specially to be called directly, not as service. */
+public final class SoftKeyboard 
+	extends DirectInputMethodService 
+	//extends InputMethodService 
+	implements KeyboardView.OnKeyboardActionListener{
     
+	//private static final boolean DEBUG=false;
+
     /**
      * This boolean indicates the optional example code for performing
      * processing of hard keys in addition to regular text generation
@@ -55,16 +58,15 @@ public final class SoftKeyboard extends InputMethodService implements KeyboardVi
      * a QWERTY keyboard to Chinese), but may not be used for input methods
      * that are primarily intended to be used for on-screen text entry.
      */
-    private static final boolean PROCESS_HARD_KEYS = true;
+    private static final boolean PROCESS_HARD_KEYS=true;
     
-    /** This keyboard is not used as a service; therefore we must give it a context. */
-    private Context context;
+    //State ----------------------------------------------------
     
     private KeyboardView mInputView;
     private CandidateView mCandidateView;
     private CompletionInfo[] mCompletions;
     
-    private StringBuilder mComposing = new StringBuilder();
+    private StringBuilder mComposing=new StringBuilder();
     private boolean mPredictionOn;
     private boolean mCompletionOn;
     private int mLastDisplayWidth;
@@ -84,12 +86,11 @@ public final class SoftKeyboard extends InputMethodService implements KeyboardVi
     
     public SoftKeyboard(){}
     
-    //Accessors --------------------------------------------------
-    
-    public void setContext(Context c){this.context=c;}
+    //Accessors --------------------------------------------------    
     
     @Override public LayoutInflater getLayoutInflater(){
-    	Object o=this.context.getSystemService(LAYOUT_INFLATER_SERVICE);
+    	Context context=this.getContext();
+    	Object o=context.getSystemService(LAYOUT_INFLATER_SERVICE);
     	LayoutInflater l=(LayoutInflater)o;
     	return l;
     }
@@ -101,10 +102,10 @@ public final class SoftKeyboard extends InputMethodService implements KeyboardVi
      * to super class.
      */
     @Override public void onCreate() {
-        super.onCreate();
-        Context context=this.context;
+        //super.onCreate();//Crash here. Intent is null.
+        Context context=this.getContext();
         Resources resources=context.getResources();
-        mWordSeparators =resources.getString(R.string.word_separators);
+        mWordSeparators=resources.getString(R.string.word_separators);
     }
     
     /**
@@ -112,9 +113,9 @@ public final class SoftKeyboard extends InputMethodService implements KeyboardVi
      * is called after creation and any configuration change.
      */
     @Override public void onInitializeInterface(){
-    	Context context=this.context;
+    	Context context=this.getContext();
         Resources resources=context.getResources();
-        mWordSeparators =resources.getString(R.string.word_separators);
+        mWordSeparators=resources.getString(R.string.word_separators);
         if(mQwertyKeyboard!=null){
             // Configuration changes can happen after the keyboard gets recreated,
             // so we need to be able to re-build the keyboards if the available
@@ -123,9 +124,9 @@ public final class SoftKeyboard extends InputMethodService implements KeyboardVi
             if (displayWidth == mLastDisplayWidth) return;
             mLastDisplayWidth = displayWidth;
         }
-        mQwertyKeyboard = new LatinKeyboard(context, R.xml.qwerty);
-        mSymbolsKeyboard = new LatinKeyboard(context, R.xml.symbols);
-        mSymbolsShiftedKeyboard = new LatinKeyboard(context, R.xml.symbols_shift);
+        mQwertyKeyboard=new LatinKeyboard(context, R.xml.qwerty);
+        mSymbolsKeyboard=new LatinKeyboard(context, R.xml.symbols);
+        mSymbolsShiftedKeyboard=new LatinKeyboard(context, R.xml.symbols_shift);
     }
     
     /**

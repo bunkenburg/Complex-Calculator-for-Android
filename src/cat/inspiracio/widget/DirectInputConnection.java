@@ -4,7 +4,7 @@ import android.inputmethodservice.InputMethodService;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.KeyEvent;
-import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.ExtractedText;
@@ -35,7 +35,12 @@ final class DirectInputConnection extends BaseInputConnection {
 	//Accessors -----------------------------------------------
 	
 	final IMEEditText getEditText(){return this.editText;}
-	final void setInputMethodService(InputMethodService ims){this.ims=ims;}
+	
+	final void setInputMethodService(DirectInputMethodService ims){
+		this.ims=ims;
+		ims.setInputConnection(this);
+	}
+	
 	final void setInputType(int inputType){this.inputType=inputType;}
 	
 	//Methods -----------------------------------------------
@@ -334,11 +339,14 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * Provides standard implementation for sending a key event to the window 
 	 * attached to the input connection's view.
 	 * 
+	 * The keyboard sent a key event. Must pass it on to the edit text.
 	 * @param event 	The key event.
 	 * @return Returns true on success, false if the input connection is no longer valid.
 	 * */
-	@Override public boolean sendKeyEvent(KeyEvent event) {
-		boolean b=super.sendKeyEvent(event);
+	@Override public final boolean sendKeyEvent(KeyEvent event){
+		int code=event.getKeyCode();
+		OnKeyListener onKeyListener=this.editText.getOnKeyListener();
+		boolean b=onKeyListener.onKey(editText, code, event);
 		return b;
 	}
 

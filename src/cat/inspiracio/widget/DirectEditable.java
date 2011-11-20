@@ -74,7 +74,7 @@ final class DirectEditable implements Editable{
 	}
 
 	@Override public final int getSpanStart(Object tag){
-		throw new RuntimeException("not implemented");
+		throw new RuntimeException("not implemented");//XXX
 	}
 
 	@Override public final <T> T[] getSpans(int arg0, int arg1, Class<T> arg2){

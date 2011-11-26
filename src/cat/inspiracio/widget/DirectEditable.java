@@ -8,6 +8,7 @@ final class DirectEditable implements Editable{
 
 	//State --------------------------------------
 	
+	@SuppressWarnings("unused")
 	private DirectInputConnection dic;
 	private IMEEditText editText;
 	
@@ -66,15 +67,18 @@ final class DirectEditable implements Editable{
 	}
 
 	@Override public final int getSpanEnd(Object tag){
-		throw new RuntimeException("not implemented");
+		//throw new RuntimeException("not implemented");
+		return -1;
 	}
 
 	@Override public final int getSpanFlags(Object tag){
 		throw new RuntimeException("not implemented");
 	}
 
-	@Override public final int getSpanStart(Object tag){
-		throw new RuntimeException("not implemented");//XXX
+	/** XXX */
+	@Override public final int getSpanStart(Object tag){	//tag==android.view.inputmethod.ComposingText
+		//throw new RuntimeException("not implemented");
+		return -1;
 	}
 
 	@Override public final <T> T[] getSpans(int arg0, int arg1, Class<T> arg2){

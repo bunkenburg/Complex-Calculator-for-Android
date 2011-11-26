@@ -17,12 +17,12 @@
  * */
 package cat.inspiracio.calculator.keyboard;
 
-import inspiracio.calculator.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.inputmethodservice.Keyboard;
 import android.view.inputmethod.EditorInfo;
+import cat.inspiracio.calculator.R;
 
 public final class LatinKeyboard extends Keyboard{
 

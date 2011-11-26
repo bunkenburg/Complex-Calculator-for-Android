@@ -16,6 +16,9 @@
 
 package cat.inspiracio.calculator.keyboard;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -25,12 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-
-import inspiracio.calculator.R;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import cat.inspiracio.calculator.R;
 import cat.inspiracio.calculator.SoftKeyboard;
 
 public class CandidateView extends View {

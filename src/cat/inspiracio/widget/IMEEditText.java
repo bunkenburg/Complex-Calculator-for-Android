@@ -1,6 +1,5 @@
 package cat.inspiracio.widget;
 
-import inspiracio.calculator.R;
 import android.app.Activity;
 import android.content.Context;
 import android.inputmethodservice.InputMethodService;
@@ -11,6 +10,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import cat.inspiracio.calculator.R;
 import cat.inspiracio.calculator.SoftKeyboard;
 import cat.inspiracio.inputmethodservice.InputMethodServiceWrapper;
 

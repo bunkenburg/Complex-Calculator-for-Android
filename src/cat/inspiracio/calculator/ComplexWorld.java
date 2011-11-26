@@ -20,7 +20,6 @@ package cat.inspiracio.calculator;
 import static android.view.KeyEvent.ACTION_DOWN;
 import static android.view.KeyEvent.KEYCODE_ENTER;
 import static android.view.KeyEvent.KEYCODE_EQUALS;
-import inspiracio.calculator.R;
 
 import java.text.ParseException;
 

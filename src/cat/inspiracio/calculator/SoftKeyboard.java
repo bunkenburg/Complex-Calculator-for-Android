@@ -20,7 +20,6 @@ package cat.inspiracio.calculator;
 
 import static android.view.KeyEvent.ACTION_DOWN;
 import static android.view.KeyEvent.ACTION_UP;
-import inspiracio.calculator.R;
 
 import java.util.ArrayList;
 import java.util.List;

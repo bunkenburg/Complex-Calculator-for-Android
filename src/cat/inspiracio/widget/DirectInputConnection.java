@@ -16,8 +16,11 @@ final class DirectInputConnection extends BaseInputConnection {
 	//State --------------------------------------------------
 	
 	private IMEEditText editText;
+	@SuppressWarnings("unused")
 	private boolean fullEditor;
+	@SuppressWarnings("unused")
 	private InputMethodService ims;
+	@SuppressWarnings("unused")
 	private int inputType;
 	
 	//Constructors -------------------------------------------
@@ -123,7 +126,7 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * @return Returns true on success, false if the input connection is no longer valid.
 	 * */
 	@Override public boolean deleteSurroundingText(int leftLength, int rightLength){
-		boolean b=super.deleteSurroundingText(leftLength, rightLength);
+		//boolean b=super.deleteSurroundingText(leftLength, rightLength);
 		throw new RuntimeException("not implemented");
 	}
 
@@ -192,9 +195,10 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * */
 	@Override public Editable getEditable(){
 		Editable e=super.getEditable();//Fake SpannableStringBuilder.
-		DirectEditable de=new DirectEditable();
-		de.setInputConnection(this);
-		e=de;
+		e=this.editText.getEditableText();
+		//DirectEditable de=new DirectEditable();
+		//de.setInputConnection(this);
+		//e=de;
 		return e;
 	}
 
@@ -221,7 +225,7 @@ final class DirectInputConnection extends BaseInputConnection {
 	@Override public ExtractedText getExtractedText(ExtractedTextRequest request, int flags){
 		ExtractedText et=super.getExtractedText(request, flags);//null
 		//I assume the ExtractedText is a value object, a snapshot of the text.
-		Editable editable=this.editText.getEditableText();
+		//Editable editable=this.editText.getEditableText();
 		et=new ExtractedText();
 		//flags
 		//partialEndOffset

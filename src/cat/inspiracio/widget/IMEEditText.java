@@ -5,6 +5,7 @@ import android.content.Context;
 import android.inputmethodservice.InputMethodService;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -130,7 +131,27 @@ public class IMEEditText extends EditText{
 		rl.addView(inputView,i);
 		
 		isKeyboardVisible=true;
-	}	
+	}
+	
+	/** Hides the keyboard. Must undo what showKeyboard did. */
+	private void hideKeyboard(){
+		if(!this.isKeyboardVisible)
+			return;
+		/// Tell the IMS it will be hidden
+		boolean finishingInput=true;
+		this.ims.onFinishInputView(finishingInput);
+		
+		Context context=this.getContext();// gives the activity.
+		Activity activity=(Activity)context;
+		//Window window=activity.getWindow();
+		//From the activity, we can get the window. From there, we can remove everything, shrink it, and put it back, above a keyboard.
+		View top=activity.findViewById(R.id.top);//Generalise this
+		RelativeLayout rl=(RelativeLayout)top;//Generalise this. I know that main.xml defines a vertical relative layout.
+		int i=rl.getChildCount();
+		rl.removeViewAt(i-1);
+		
+		this.isKeyboardVisible=false;
+	}
 	
 	//Overridden methods --------------------------------------------
 	
@@ -160,6 +181,17 @@ public class IMEEditText extends EditText{
 		return false;
 	}
 		
+	/** Trying to get BACK key to close the keyboard.
+	 * @see android.widget.TextView#onKeyDown(int, android.view.KeyEvent)
+	 */
+	@Override public final boolean onKeyDown(int keyCode, KeyEvent event){
+	    if(keyCode==KeyEvent.KEYCODE_BACK && event.getRepeatCount()==0){
+	    	this.hideKeyboard();
+	        return true;
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
+
 	//Helpers -------------------------------------------
 	
 	void say(Object o){

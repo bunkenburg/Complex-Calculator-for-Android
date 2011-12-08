@@ -118,7 +118,15 @@ public final class ComplexWorld extends Activity{
         //if(bundle!=null)this.world.onRestoreInstanceState(bundle);
     }
 
-    /** Writes the state to bundle. */
+    /** First close the keyboard, if it is shown.
+	 * @see android.app.Activity#onBackPressed()
+	 */
+	@Override public void onBackPressed(){
+		//super.onBackPressed();
+		throw new RuntimeException("not implemented");
+	}
+
+	/** Writes the state to bundle. */
 	@Override protected final void onSaveInstanceState(Bundle bundle){
 		super.onSaveInstanceState(bundle);
 		this.world.parcel("inspiracio.calculator.world", bundle);

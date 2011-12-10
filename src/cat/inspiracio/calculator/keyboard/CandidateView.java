@@ -1,19 +1,20 @@
-/*
- * Copyright (C) 2008-2009 Google Inc.
+/*	Copyright 2011 Alexander Bunkenburg alex@inspiracio.com
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * This file is part of Complex Calculator for Android.
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Complex Calculator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
-
+ * Complex Calculator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Complex Calculator for Android. If not, see <http://www.gnu.org/licenses/>.
+ * */
 package cat.inspiracio.calculator.keyboard;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import android.view.View;
 import cat.inspiracio.calculator.R;
 import cat.inspiracio.calculator.SoftKeyboard;
 
-public class CandidateView extends View {
+public final class CandidateView extends View {
 
     private static final int OUT_OF_BOUNDS = -1;
 
@@ -66,12 +67,9 @@ public class CandidateView extends View {
     
     private GestureDetector mGestureDetector;
 
-    /**
-     * Construct a CandidateView for showing suggested words for completion.
-     * @param context
-     * @param attrs
-     */
-    public CandidateView(Context context) {
+    /** Construct a CandidateView for showing suggested words for completion.
+     * @param context */
+    public CandidateView(Context context){
         super(context);
         mSelectionHighlight = context.getResources().getDrawable(
                 android.R.drawable.list_selector_background);
@@ -98,8 +96,7 @@ public class CandidateView extends View {
         mPaint.setStrokeWidth(0);
         
         mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2,
+            @Override public boolean onScroll(MotionEvent e1, MotionEvent e2,
                     float distanceX, float distanceY) {
                 mScrolled = true;
                 int sx = getScrollX();
@@ -122,21 +119,13 @@ public class CandidateView extends View {
         setVerticalScrollBarEnabled(false);
     }
     
-    /**
-     * A connection back to the service to communicate with the text field
-     * @param listener
-     */
-    public void setService(SoftKeyboard listener) {
-        mService = listener;
-    }
+    /** A connection back to the service to communicate with the text field
+     * @param listener */
+    public void setService(SoftKeyboard listener){mService=listener;}
     
-    @Override
-    public int computeHorizontalScrollRange() {
-        return mTotalWidth;
-    }
+    @Override public final int computeHorizontalScrollRange(){return mTotalWidth;}
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int measuredWidth = resolveSize(50, widthMeasureSpec);
         
         // Get the desired height of the icon menu view (last row of items does
@@ -155,11 +144,9 @@ public class CandidateView extends View {
      * If the canvas is null, then only touch calculations are performed to pick the target
      * candidate.
      */
-    @Override
-    protected void onDraw(Canvas canvas) {
-        if (canvas != null) {
+    @Override protected final void onDraw(Canvas canvas) {
+        if (canvas != null)
             super.onDraw(canvas);
-        }
         mTotalWidth = 0;
         if (mSuggestions == null) return;
         
@@ -207,16 +194,14 @@ public class CandidateView extends View {
                 }
                 canvas.drawText(suggestion, x + X_GAP, y, paint);
                 paint.setColor(mColorOther); 
-                canvas.drawLine(x + wordWidth + 0.5f, bgPadding.top, 
-                        x + wordWidth + 0.5f, height + 1, paint);
+                canvas.drawLine(x + wordWidth + 0.5f, bgPadding.top, x + wordWidth + 0.5f, height + 1, paint);
                 paint.setFakeBoldText(false);
             }
             x += wordWidth;
         }
         mTotalWidth = x;
-        if (mTargetScrollX != getScrollX()) {
+        if (mTargetScrollX != getScrollX())
             scrollToTarget();
-        }
     }
     
     private void scrollToTarget() {
@@ -260,12 +245,9 @@ public class CandidateView extends View {
         invalidate();
     }
     
-    @Override
-    public boolean onTouchEvent(MotionEvent me) {
-
-        if (mGestureDetector.onTouchEvent(me)) {
+    @Override public boolean onTouchEvent(MotionEvent me) {
+        if (mGestureDetector.onTouchEvent(me))
             return true;
-        }
 
         int action = me.getAction();
         int x = (int) me.getX();
@@ -301,18 +283,15 @@ public class CandidateView extends View {
         return true;
     }
     
-    /**
-     * For flick through from keyboard, call this method with the x coordinate of the flick 
+    /** For flick through from keyboard, call this method with the x coordinate of the flick 
      * gesture.
-     * @param x
-     */
+     * @param x */
     public void takeSuggestionAt(float x) {
         mTouchX = (int) x;
         // To detect candidate
         onDraw(null);
-        if (mSelectedIndex >= 0) {
+        if(0<=mSelectedIndex)
             mService.pickSuggestionManually(mSelectedIndex);
-        }
         invalidate();
     }
 

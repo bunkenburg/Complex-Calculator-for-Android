@@ -23,7 +23,7 @@ import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.Keyboard.Key;
 import android.util.AttributeSet;
 
-public final class LatinKeyboardView extends KeyboardView{
+public final class CCKeyboardView extends KeyboardView{
 
     public static final int KEYCODE_OPTIONS = -100;
     
@@ -32,11 +32,11 @@ public final class LatinKeyboardView extends KeyboardView{
     //Constructors -------------------------------------------
     
     /** Called by Inflater. */
-    public LatinKeyboardView(Context context, AttributeSet attrs) {
+    public CCKeyboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public LatinKeyboardView(Context context, AttributeSet attrs, int defStyle) {
+    public CCKeyboardView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

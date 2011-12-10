@@ -60,14 +60,7 @@ public final class ComplexWorld extends Activity{
 	
 	//Constructors ----------------------------------------------------------------
 	
-	public ComplexWorld(){
-		//Make sure the class is loaded before inflating,
-		//since the EditText references that class.
-		//XXX Doesn't work. Find out how I can specify that
-		//CC should use its own InputMethodService.
-		Class<SoftKeyboard> c=SoftKeyboard.class;
-		System.out.println(c);
-	}
+	public ComplexWorld(){}
 	
 	//Activity methods ------------------------------------------------------------
 	
@@ -92,7 +85,7 @@ public final class ComplexWorld extends Activity{
         View v=this.findViewById(R.id.display);
         IMEEditText it=(IMEEditText)v;
         SoftKeyboard ims=new SoftKeyboard();
-        ims.setContext(this);
+        //ims.setContext(this);
         it.setInputMethodService(ims);
         this.display=it;
         this.display.setOnKeyListener(new OnKeyListener(){
@@ -122,7 +115,6 @@ public final class ComplexWorld extends Activity{
 	 * @see android.app.Activity#onBackPressed()
 	 */
 	@Override public void onBackPressed(){
-		//super.onBackPressed();
 		throw new RuntimeException("not implemented");
 	}
 

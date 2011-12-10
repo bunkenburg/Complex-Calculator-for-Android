@@ -119,15 +119,13 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * The default implementation performs the deletion around the 
 	 * current selection position of the editable text.
 	 * 
-	 * XXX Must implement this.
-	 * 
 	 * @param leftLength
 	 * @param rightLength
 	 * @return Returns true on success, false if the input connection is no longer valid.
 	 * */
 	@Override public boolean deleteSurroundingText(int leftLength, int rightLength){
-		//boolean b=super.deleteSurroundingText(leftLength, rightLength);
-		throw new RuntimeException("not implemented");
+		boolean b=super.deleteSurroundingText(leftLength, rightLength);
+		return b;
 	}
 
 	/** Tell the editor that you are done with a batch edit previously 
@@ -153,7 +151,6 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * For CC irrelevant.
 	 * */
 	@Override public boolean finishComposingText(){
-		//XXX
 		boolean b=super.finishComposingText();
 		return b;
 	}
@@ -194,11 +191,7 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * 
 	 * */
 	@Override public Editable getEditable(){
-		Editable e=super.getEditable();//Fake SpannableStringBuilder.
-		e=this.editText.getEditableText();
-		//DirectEditable de=new DirectEditable();
-		//de.setInputConnection(this);
-		//e=de;
+		Editable e=this.editText.getEditableText();
 		return e;
 	}
 
@@ -216,17 +209,13 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * 
 	 * Called by ExtractedTextRequest(IInputConnectionWrapper).executeMessage(Message), IInputConnectionWrapper$MyHandler.handleMessage(Message).
 	 * 
-	 * XXX Must implement this.
-	 * 
 	 * @param request 	Description of how the text should be returned.
 	 * @param flags 	Additional options to control the client, either 0 or GET_EXTRACTED_TEXT_MONITOR.
 	 * @returns Returns an ExtractedText object describing the state of the text view and containing the extracted text itself. 
 	 * */
 	@Override public ExtractedText getExtractedText(ExtractedTextRequest request, int flags){
-		ExtractedText et=super.getExtractedText(request, flags);//null
 		//I assume the ExtractedText is a value object, a snapshot of the text.
-		//Editable editable=this.editText.getEditableText();
-		et=new ExtractedText();
+		ExtractedText et=new ExtractedText();
 		//flags
 		//partialEndOffset
 		//partialStartOffset
@@ -273,20 +262,19 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * 
 	 * The default implementation does nothing.
 	 * 
-	 * XXX Must implement. Pass it to the editor.
 	 * */
-	@Override public boolean performContextMenuAction(int id) {
-		boolean b=super.performContextMenuAction(id);
-		return b;
+	@Override public boolean performContextMenuAction(int id){
+		boolean performed=this.editText.onTextContextMenuItem(id);
+		return performed;
 	}
 
 	/** Have the editor perform an action it has said it can do.
 	 * 
 	 * The default implementation turns this into the enter key.
 	 * */
-	@Override public boolean performEditorAction(int actionCode) {
-		boolean b=super.performEditorAction(actionCode);
-		return b;
+	@Override public boolean performEditorAction(int actionCode){
+		this.editText.onEditorAction(actionCode);
+		return true;
 	}
 
 	/** API to send private commands from an input method to its 
@@ -307,9 +295,10 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * @return Returns true if the command was sent (whether or not the 
 	 * associated editor understood it), false if the input connection is no longer valid. 
 	 * */
-	@Override public boolean performPrivateCommand(String action, Bundle data) {
-		boolean b=super.performPrivateCommand(action, data);
-		return b;
+	@Override public boolean performPrivateCommand(String action, Bundle data){
+		@SuppressWarnings("unused")
+		boolean understood=this.editText.onPrivateIMECommand(action, data);
+		return true;
 	}
 
 	/** Called by the IME to tell the client when it switches between 
@@ -318,7 +307,7 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * 
 	 * Default implementation: Updates InputMethodManager with the 
 	 * current fullscreen mode. */
-	@Override public boolean reportFullscreenMode(boolean enabled) {
+	@Override public boolean reportFullscreenMode(boolean enabled){
 		boolean b=super.reportFullscreenMode(enabled);
 		return b;
 	}
@@ -348,21 +337,40 @@ final class DirectInputConnection extends BaseInputConnection {
 	 * @return Returns true on success, false if the input connection is no longer valid.
 	 * */
 	@Override public final boolean sendKeyEvent(KeyEvent event){
+		boolean consumed=false;
+
+		//Send it to the key listener, if there is one.
 		int code=event.getKeyCode();
 		OnKeyListener onKeyListener=this.editText.getOnKeyListener();
-		boolean b=onKeyListener.onKey(editText, code, event);
-		return b;
+		if(onKeyListener!=null)
+			onKeyListener.onKey(editText, code, event);
+		
+		//Send the event to the EditText
+		if(!consumed){
+			int action=event.getAction();
+			int repeat=event.getRepeatCount();
+			switch(action){
+			case KeyEvent.ACTION_DOWN:
+				this.editText.onKeyDown(code, event);break;
+			case KeyEvent.ACTION_MULTIPLE:
+				this.editText.onKeyMultiple(code, repeat, event);break;
+			case KeyEvent.ACTION_UP:
+				this.editText.onKeyUp(code, event);break;
+			}
+		}
+		return true;
 	}
 
-	/***/
+	/** not implemented */
 	@Override public boolean setComposingText(CharSequence text, int newCursorPosition) {
 		boolean b=super.setComposingText(text, newCursorPosition);
 		return b;
 	}
 
-	@Override public boolean setSelection(int start, int end) {
-		boolean b=super.setSelection(start, end);
-		return b;
+	/** Sets selection in the connected IMEEditText. */
+	@Override public boolean setSelection(int start, int end){
+		this.editText.setSelection(start, end);
+		return true;
 	}
 
 }

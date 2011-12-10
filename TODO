@@ -1,9 +1,9 @@
 Release 1.0:
 
+* BottomImaginary not correct
+* LeftReal not correct
+* display keyboard in a good layout
 * display: erase old "=" and result
-* Input method service with a good keyboard for mathematics
-* select our keyboard for display
-* prevent keyboard until focus on display
 
 BUGS:
 

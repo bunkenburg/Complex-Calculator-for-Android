@@ -19,7 +19,7 @@
  * */
 -->
 
-<cat.inspiracio.calculator.keyboard.LatinKeyboardView
+<cat.inspiracio.calculator.keyboard.CCKeyboardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/keyboard"
         android:layout_alignParentBottom="true"

@@ -2,7 +2,6 @@ package cat.inspiracio.widget;
 
 import android.app.Activity;
 import android.content.Context;
-import android.inputmethodservice.InputMethodService;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -12,8 +11,6 @@ import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import cat.inspiracio.calculator.R;
-import cat.inspiracio.calculator.SoftKeyboard;
-import cat.inspiracio.inputmethodservice.InputMethodServiceWrapper;
 
 /** Like android.widget.EditText except that it can use a specific IME
  * instead of the one configured in the system. */
@@ -34,8 +31,11 @@ public class IMEEditText extends EditText{
 	/** If a client sets a click listener, it goes here. */
 	private OnClickListener clickListener;
 	
+	/** If a client sets a long click listener, it goes here. */
+	private OnLongClickListener longClickListener;
+	
 	/** If a client sets an OnKeyListener, it goes here. */
-	private OnKeyListener onKeyListener;
+	private OnKeyListener keyListener;
 	
 	//Constructors ---------------------------------------
 	
@@ -63,8 +63,9 @@ public class IMEEditText extends EditText{
 		super.setOnClickListener(l);
 		OnLongClickListener ll=new OnLongClickListener(){
 			@Override public boolean onLongClick(View v){
-				say("onLongClick " + v);
-				return true;
+				if(longClickListener!=null)
+					return longClickListener.onLongClick(v);
+				return false;//not used the event
 			}
 		};
 		this.setOnLongClickListener(ll);
@@ -72,7 +73,6 @@ public class IMEEditText extends EditText{
 		//Disable the system input method
 		this.inputType=this.getInputType();
 		this.setInputType(0);//none
-		//this.setEnabled(false);//Makes the edit text all grey.
 	}
 	
 	//Accessors ------------------------------------------
@@ -80,14 +80,11 @@ public class IMEEditText extends EditText{
 	/** Sets the IME to use with this EditText. 
 	 * Call once, before anything else.
 	 * Wraps the input method service and overrides some of its methods. */
-	public final void setInputMethodService(InputMethodService ims){
+	public final void setInputMethodService(DirectInputMethodService ims){
 		Context c=this.getContext();
-		InputMethodServiceWrapper w=new InputMethodServiceWrapper(ims);
-		w.setContext(c);
-		DirectInputMethodService d=new SoftKeyboard();//Ignores argument
-		d.setContext(c);
-		this.ims=d;
-		this.ims.onCreate();//Should call this, but super.onCreate() fails because its context is no good.
+		ims.setContext(c);
+		this.ims=ims;
+		this.ims.onCreate();
 		this.ims.onInitializeInterface();
 	}
 
@@ -95,10 +92,10 @@ public class IMEEditText extends EditText{
 	
 	@Override public final void setOnKeyListener(OnKeyListener l){
 		super.setOnKeyListener(l);
-		this.onKeyListener=l;
+		this.keyListener=l;
 	}
 	
-	public final OnKeyListener getOnKeyListener(){return this.onKeyListener;}
+	public final OnKeyListener getOnKeyListener(){return this.keyListener;}
 	
 	//Helpers --------------------------------------------
 	
@@ -116,6 +113,7 @@ public class IMEEditText extends EditText{
 		if(isKeyboardVisible)
 			return;
 		//Show the keyboard
+		//XXX Improve this.
 		View inputView=this.ims.onCreateInputView();
 		//Make a vertical relative layout with two subviews:
 		//Everything in the activity, but shrunk,
@@ -177,9 +175,7 @@ public class IMEEditText extends EditText{
 	 * Called also from super.onCreateInputConnection(EditorInfor).
 	 * Also called from InputMethod Manager.onWindowFocus(View, View, int, boolean, int), ViewRoot.handleMessage(Message).
 	 * */
-	@Override public final boolean onCheckIsTextEditor(){
-		return false;
-	}
+	@Override public final boolean onCheckIsTextEditor(){return false;}
 		
 	/** Trying to get BACK key to close the keyboard.
 	 * @see android.widget.TextView#onKeyDown(int, android.view.KeyEvent)
@@ -194,7 +190,6 @@ public class IMEEditText extends EditText{
 
 	//Helpers -------------------------------------------
 	
-	void say(Object o){
-		Log.d(TAG, o.toString());
-	}
+	@SuppressWarnings("unused")
+	private void say(Object o){Log.d(TAG, o.toString());}
 }

@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
@@ -112,21 +115,38 @@ public class IMEEditText extends EditText{
 	private void showKeyboard(){
 		if(isKeyboardVisible)
 			return;
+		
 		//Show the keyboard
-		//XXX Improve this.
 		View inputView=this.ims.onCreateInputView();
 		//Make a vertical relative layout with two subviews:
-		//Everything in the activity, but shrunk,
-		//and the keyboard's view.
+		//Everything in the activity, but shrunk, and the keyboard's input view.
 		Context context=this.getContext();// gives the activity.
 		Activity activity=(Activity)context;
-		//Window window=activity.getWindow();
-		//From the activity, we can get the window. From there, we can remove everything, shrink it, and put it back, above a keyboard.
+		
 		View top=activity.findViewById(R.id.top);//Generalise this
-		RelativeLayout rl=(RelativeLayout)top;//Generalise this. I know that main.xml defines a vertical relative layout.
-		//Add it below, not at the above everything else.
-		int i=rl.getChildCount();
-		rl.addView(inputView,i);
+		//Remove top from its parent
+		ViewGroup parent=(ViewGroup)top.getParent();//FrameLayout extends ViewGroup
+		parent.removeView(top);
+		
+		//Relative layout
+		LayoutInflater inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		RelativeLayout all=(RelativeLayout)inflater.inflate(R.layout.activity_with_kb, null);
+		all.setGravity(Gravity.FILL);
+		int width=ViewGroup.LayoutParams.FILL_PARENT;
+		int height=ViewGroup.LayoutParams.WRAP_CONTENT;
+		RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(width, height);
+		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		all.addView(inputView, params);
+
+		width=ViewGroup.LayoutParams.FILL_PARENT;
+		height=ViewGroup.LayoutParams.FILL_PARENT;
+		params=new RelativeLayout.LayoutParams(width, height);
+		int id=inputView.getId();
+		params.addRule(RelativeLayout.ABOVE, id);
+		all.addView(top, params);
+		
+		params=new RelativeLayout.LayoutParams(width, height);
+		parent.addView(all, params);
 		
 		isKeyboardVisible=true;
 	}
@@ -141,12 +161,16 @@ public class IMEEditText extends EditText{
 		
 		Context context=this.getContext();// gives the activity.
 		Activity activity=(Activity)context;
-		//Window window=activity.getWindow();
-		//From the activity, we can get the window. From there, we can remove everything, shrink it, and put it back, above a keyboard.
-		View top=activity.findViewById(R.id.top);//Generalise this
-		RelativeLayout rl=(RelativeLayout)top;//Generalise this. I know that main.xml defines a vertical relative layout.
-		int i=rl.getChildCount();
-		rl.removeViewAt(i-1);
+		ViewGroup all=(ViewGroup)activity.findViewById(R.id.all);
+		
+		//Remove all from its parent
+		ViewGroup parent=(ViewGroup)all.getParent();
+		parent.removeView(all);
+		
+		//Put just top there
+		View top=all.findViewById(R.id.top);
+		all.removeView(top);
+		parent.addView(top);
 		
 		this.isKeyboardVisible=false;
 	}

@@ -36,16 +36,6 @@
 		<Button android:text="Clear" android:id="@+id/clearButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 	</LinearLayout>
 
-	<!--Could also use:
-	
-		Don't know how to make this work:
-		android:inputMethod="cat.inspiracio.calculator.SoftKeyboard"
-		How can I make CC use its own input method service?
-		
-		android:scrollHorizontally="true"
-		android:imeActionLabel="=" Seems to disable key 
-		android:digits=" !sinhcoshtanhconjoppReImlnexp^modargiepi()789*/456+-123=0.z"
-	-->
 	<cat.inspiracio.widget.IMEEditText
 		android:id="@+id/display" 
  		android:layout_height="wrap_content" 

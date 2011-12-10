@@ -2,7 +2,7 @@ Release 1.0:
 
 * BottomImaginary not correct
 * LeftReal not correct
-* display keyboard in a good layout
+* display keyboard in landscape: small error
 * display: erase old "=" and result
 
 BUGS:

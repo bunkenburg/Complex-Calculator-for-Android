@@ -199,4 +199,25 @@ public final class ComplexWorld extends Activity{
         }
     }
 
+	/** Erases the old displayed result, if there is one.
+	 * Erases everything from "=" onwards.
+	 * <p>
+	 * Every key press should first call this. */
+    @SuppressWarnings("unused")
+	private void eraseOldResult(){
+        String s = display.getText().toString();
+        int i = s.lastIndexOf('=');
+        if(i != -1){
+            int start = display.getSelectionStart();//getCaretPosition();
+            int end=display.getSelectionEnd();
+            s = s.substring(0, i);
+            int k = s.length();
+            display.setText(s);
+            start = start >= k ? k : start;
+            end = end >= k ? k : end;
+            //display.setCaretPosition(start);
+            display.setSelection(start, end);
+        }
+    }
+
 }

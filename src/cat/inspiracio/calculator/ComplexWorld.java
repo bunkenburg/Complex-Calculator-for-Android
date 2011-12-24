@@ -28,11 +28,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import cat.inspiracio.numbers.BugException;
@@ -47,10 +49,10 @@ public final class ComplexWorld extends Activity{
 	//State -----------------------------------------------------------------------
 	
 	/** Button for resetting, that is re-centering the plane. */
-	private Button resetButton;
+//	private Button resetButton;
 	
 	/** Button for clearing, that is deleting all the shown numbers. */
-	private Button clearButton;
+//	private Button clearButton;
 	
 	/** The world where the numbers are displayed graphically. */
 	private WorldRepresentation world;
@@ -69,15 +71,15 @@ public final class ComplexWorld extends Activity{
     	super.onCreate(bundle);
         this.setContentView(R.layout.main);
         
-        this.resetButton=(Button)this.findViewById(R.id.resetButton);
-        this.resetButton.setOnClickListener(new View.OnClickListener(){
-			@Override public void onClick(View v){world.reset();}
-		});
+//        this.resetButton=(Button)this.findViewById(R.id.resetButton);
+//        this.resetButton.setOnClickListener(new View.OnClickListener(){
+//			@Override public void onClick(View v){world.reset();}
+//		});
         
-        this.clearButton=(Button)this.findViewById(R.id.clearButton);
-        this.clearButton.setOnClickListener(new View.OnClickListener(){
-			@Override public void onClick(View v){world.clear();}
-		});
+//        this.clearButton=(Button)this.findViewById(R.id.clearButton);
+//        this.clearButton.setOnClickListener(new View.OnClickListener(){
+//			@Override public void onClick(View v){world.clear();}
+//		});
         
         this.world=(WorldRepresentation)this.findViewById(R.id.canvas);
         this.world.set(this);
@@ -111,11 +113,35 @@ public final class ComplexWorld extends Activity{
         //if(bundle!=null)this.world.onRestoreInstanceState(bundle);
     }
 
-    /** First close the keyboard, if it is shown.
+    /** Create the options menu for the first time. */
+    @Override public final boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=this.getMenuInflater();
+        inflater.inflate(R.menu.plane_menu, menu);
+        return true;
+    }
+    
+    /** Event handler for options menu. */
+    @Override public final boolean onOptionsItemSelected(MenuItem item) {
+        int itemId=item.getItemId();
+        switch(itemId){
+        case R.id.reset:
+        	this.world.reset();
+            return true;
+        case R.id.clear:
+            this.world.clear();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+    
+    /** If the user presses BACK:
+     * If keyboard is visible, close it. IMEEditText handles that.
+     * If keyboard is not visible, close CC.
 	 * @see android.app.Activity#onBackPressed()
 	 */
 	@Override public void onBackPressed(){
-		throw new RuntimeException("not implemented");
+		this.finish();
 	}
 
 	/** Writes the state to bundle. */

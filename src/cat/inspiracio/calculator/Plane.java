@@ -70,20 +70,21 @@ final class Plane extends WorldRepresentation{
     //State -------------------------------------------------
     
     /** The mathematical distance 1 is how many pixels? */
-    private double ScaleFactor=SCALEFACTOR_INITIAL;//40D;
+    private double scaleFactor=SCALEFACTOR_INITIAL;//40D;
     
-    private double CenterReal;
-    private double CenterImaginary;
-    private double TopImaginary;
-    private double LeftReal;
-    private double BottomImaginary;
-    private double RightReal;
+    private double centerReal;
+    private double centerImaginary;
+    private double topImaginary;
+    private double leftReal;
+    private double bottomImaginary;
+    private double rightReal;
 
     //The limits of what is shown, in numbers. (Variables copied from World.)
-    private double MaxImaginary;
-    private double MinImaginary;
-    private double MaxReal;
-    private double MinReal;
+    //If we have no limits yet, NaN.
+    private double maxImaginary=Double.NaN;
+    private double minImaginary=Double.NaN;
+    private double maxReal=Double.NaN;
+    private double minReal=Double.NaN;
 
     /** The numbers that are currently displayed. */
     private Set<EC>numbers=new HashSet<EC>();
@@ -109,9 +110,6 @@ final class Plane extends WorldRepresentation{
 			
 			/** In calculator-mode, dragging is moving the plane. */
 			@Override public void onDrag(DragEvent e){
-				//Only for visual debugging of my implementation of drag-events.
-				//for(Point point : e.getPoints())add(point2Complex(point));
-				
 				Point start=e.getStart();
 				Point end=e.getEnd();
 				int deltaX=start.x-end.x;
@@ -127,21 +125,21 @@ final class Plane extends WorldRepresentation{
 				EC fixNumber=Plane.this.point2Complex(fixPoint);
 
 				//Math distance from fix to centre, before zooming.
-				double deltaX= CenterReal-fixNumber.re();
-				double deltaY= CenterImaginary-fixNumber.im();
+				double deltaX=centerReal-fixNumber.re();
+				double deltaY=centerImaginary-fixNumber.im();
 				
 				//Pixel distance from fix to centre. Keep this constant.
 				int pixelX=math2Pix(deltaX);
 				int pixelY=math2Pix(deltaY);
 
 				//Now scale.
-		    	ScaleFactor *= e.getFactor();
+		    	scaleFactor *= e.getFactor();
 		    	
 		    	//New math distance from fix to centre, after zooming.
 		    	deltaX=pix2Math(pixelX);
 		    	deltaY=pix2Math(pixelY);
-		    	CenterReal = fixNumber.re()+deltaX;
-		    	CenterImaginary = fixNumber.im()+deltaY;
+		    	centerReal=fixNumber.re()+deltaX;
+		    	centerImaginary=fixNumber.im()+deltaY;
 		    	
 		    	invalidate();
 			}
@@ -163,30 +161,29 @@ final class Plane extends WorldRepresentation{
 		Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
 		paint.setColor(Color.BLUE);
 		//Text size: the default 12 is quite small. The display has 27 by default. Polishing needed.
-		//float textSize=paint.getTextSize();//12
 		paint.setTextSize(FONTHEIGHT);
-        Drawing drawing = new Drawing(canvas, paint);
+        Drawing drawing=new Drawing(canvas, paint);
 		
         //Some points please
-		Point point = new Point();
-        Point point1 = new Point();
-        Point point2 = new Point();
+		Point point=new Point();
+        Point point1=new Point();
+        Point point2=new Point();
         
         //Find the limits of what's visible
-        TopImaginary = CenterImaginary + pix2Math(height / 2);
-        BottomImaginary = CenterImaginary - pix2Math(height / 2);
-        LeftReal = CenterReal - pix2Math(width / 2);
-        RightReal = CenterReal + pix2Math(width / 2);
+        topImaginary = centerImaginary + pix2Math(height / 2);
+        bottomImaginary = centerImaginary - pix2Math(height / 2);
+        leftReal = centerReal - pix2Math(width / 2);
+        rightReal = centerReal + pix2Math(width / 2);
                 
         //Draws the x axis.
         double d = raiseSmooth(pix2Math(AXISMARKING));
         int l = math2Pix(d);
         double d1 = 0.0D;
         double d2 = 0.0D;
-        double d3 = LeftReal + pix2Math(AXISSPACE);
-        double d4 = RightReal - pix2Math(AXISSPACE);
-        double d5 = BottomImaginary + pix2Math(AXISSPACE);
-        double d6 = TopImaginary - pix2Math(AXISSPACE);
+        double d3 = leftReal + pix2Math(AXISSPACE);
+        double d4 = rightReal - pix2Math(AXISSPACE);
+        double d5 = bottomImaginary + pix2Math(AXISSPACE);
+        double d6 = topImaginary - pix2Math(AXISSPACE);
         if(d3 <= 0.0D && d4 >= 0.0D)
             d1 = 0.0D;
         else if(d3 > 0.0D)
@@ -205,11 +202,11 @@ final class Plane extends WorldRepresentation{
         drawing.drawLine(point, point1, Color.LTGRAY);
         Polygon polygon = Polygon.mkTriangle(point1, EAST, TRIANGLESIZE);
         drawing.draw(polygon);
-        if(RightReal <= MaxReal)
+        if(!Double.isNaN(maxReal) && rightReal<=maxReal)
             drawing.fill(polygon, Color.RED);
         polygon = Polygon.mkTriangle(point, WEST, TRIANGLESIZE);
         drawing.draw(polygon);
-        if(MinReal <= LeftReal)
+        if(!Double.isNaN(minReal) && minReal<=leftReal)
             drawing.fill(polygon, Color.RED);
         int j = point2.y;
         double d7 = Math.ceil(d3 / d);
@@ -228,11 +225,11 @@ final class Plane extends WorldRepresentation{
         drawing.drawLine(point, point1, Color.LTGRAY);
         polygon = Polygon.mkTriangle(point1, NORTH, TRIANGLESIZE);
         drawing.draw(polygon);
-        if(TopImaginary <= MaxImaginary)
+        if(!Double.isNaN(maxImaginary) && topImaginary <= maxImaginary)
             drawing.fill(polygon, Color.RED);
         polygon = Polygon.mkTriangle(point, SOUTH, TRIANGLESIZE);
         drawing.draw(polygon);
-        if(MinImaginary <= BottomImaginary)
+        if(!Double.isNaN(minImaginary) && minImaginary <= bottomImaginary)
             drawing.fill(polygon, Color.RED);
         i = point2.x;
         d7 = Math.ceil(d5 / d);
@@ -252,38 +249,38 @@ final class Plane extends WorldRepresentation{
 	}
 
 	@Override public final void parcel(String prefix, Bundle b){
-		b.putDouble(prefix + ".BottomImaginary", BottomImaginary);
-		b.putDouble(prefix + ".CenterImaginary", CenterImaginary);
-		b.putDouble(prefix + ".CenterReal", CenterReal);
-		b.putDouble(prefix + ".LeftReal", LeftReal);
-		b.putDouble(prefix + ".MaxImaginary", MaxImaginary);
-		b.putDouble(prefix + ".MaxReal", MaxReal);
-		b.putDouble(prefix + ".MinImaginary", MinImaginary);
-		b.putDouble(prefix + ".MinReal", MinReal);
+		b.putDouble(prefix + ".bottomImaginary", bottomImaginary);
+		b.putDouble(prefix + ".centerImaginary", centerImaginary);
+		b.putDouble(prefix + ".centerReal", centerReal);
+		b.putDouble(prefix + ".leftReal", leftReal);
+		b.putDouble(prefix + ".maxImaginary", maxImaginary);
+		b.putDouble(prefix + ".maxReal", maxReal);
+		b.putDouble(prefix + ".minImaginary", minImaginary);
+		b.putDouble(prefix + ".minReal", minReal);
 		//numbers
 		ArrayList<EC> zs=new ArrayList<EC>(numbers.size());
 		zs.addAll(numbers);
 		b.putParcelableArrayList(prefix + ".numbers", zs);
-		b.putDouble(prefix + ".RightReal", RightReal);
-		b.putDouble(prefix + ".ScaleFactor", ScaleFactor);
-		b.putDouble(prefix + ".TopImaginary", TopImaginary);
+		b.putDouble(prefix + ".rightReal", rightReal);
+		b.putDouble(prefix + ".scaleFactor", scaleFactor);
+		b.putDouble(prefix + ".topImaginary", topImaginary);
 	}
 		
 	@Override public final void unparcel(String prefix, Bundle b){
-		BottomImaginary=b.getDouble(prefix + ".BottomImaginary");
-		CenterImaginary=b.getDouble(prefix + ".CenterImaginary");
-		CenterReal=b.getDouble(prefix + ".CenterReal");
-		LeftReal=b.getDouble(prefix + ".LeftReal");
-		MaxImaginary=b.getDouble(prefix + ".MaxImaginary");
-		MaxReal=b.getDouble(prefix + ".MaxReal");
-		MinImaginary=b.getDouble(prefix + ".MinImaginary");
-		MinReal=b.getDouble(prefix + ".MinReal");
+		bottomImaginary=b.getDouble(prefix + ".bottomImaginary");
+		centerImaginary=b.getDouble(prefix + ".centerImaginary");
+		centerReal=b.getDouble(prefix + ".centerReal");
+		leftReal=b.getDouble(prefix + ".leftReal");
+		maxImaginary=b.getDouble(prefix + ".maxImaginary");
+		maxReal=b.getDouble(prefix + ".maxReal");
+		minImaginary=b.getDouble(prefix + ".minImaginary");
+		minReal=b.getDouble(prefix + ".minReal");
 		//numbers
 		ArrayList<EC>zs=b.getParcelableArrayList(prefix + ".numbers");
 		numbers.addAll(zs);
-		RightReal=b.getDouble(prefix + ".RightReal");
-		ScaleFactor=b.getDouble(prefix + ".ScaleFactor");
-		TopImaginary=b.getDouble(prefix + ".TopImaginary");
+		rightReal=b.getDouble(prefix + ".rightReal");
+		scaleFactor=b.getDouble(prefix + ".scaleFactor");
+		topImaginary=b.getDouble(prefix + ".topImaginary");
 	}
 		
 	/** Called when the size of the view has changed. */
@@ -294,24 +291,28 @@ final class Plane extends WorldRepresentation{
 	//Business methods ----------------------------------------------
 
 	/** Adds a number to be displayed in the world. */
-	@Override void add(EC c){
+	@Override final void add(EC c){
 		this.updateExtremes(c);
 		this.numbers.add(c);
 		this.invalidate();
 	}
 
 	/** Clears all displayed numbers and stuff. */
-	@Override void clear(){
+	@Override final void clear(){
 		this.numbers.clear();
+		this.minReal=Double.NaN;
+		this.maxReal=Double.NaN;
+		this.minImaginary=Double.NaN;
+		this.maxImaginary=Double.NaN;
 		this.invalidate();
 	}
 	
 
 	/** Resets to centre on zero. */
-    @Override void reset(){
-        CenterReal = 0.0D;
-        CenterImaginary = 0.0D;
-        this.ScaleFactor=SCALEFACTOR_INITIAL;
+    @Override final void reset(){
+        centerReal=0.0D;
+        centerImaginary=0.0D;
+        this.scaleFactor=SCALEFACTOR_INITIAL;
 		this.invalidate();
     }
 
@@ -320,8 +321,8 @@ final class Plane extends WorldRepresentation{
      * @param j vertical up?/down? pixel shift
      * */
     private void shift(int i, int j){
-        CenterImaginary -= pix2Math(j);
-        CenterReal += pix2Math(i);
+        centerImaginary -= pix2Math(j);
+        centerReal += pix2Math(i);
 		this.invalidate();
     }
 
@@ -332,36 +333,39 @@ final class Plane extends WorldRepresentation{
 	 * @param y imaginary part
 	 * @param point Sets the properties of this point. */
     private void cartesian2Point(double x, double y, Point point){
-        point.x = (int)((x - LeftReal) * ScaleFactor);
-        point.y = -(int)((y - TopImaginary) * ScaleFactor);
+        point.x = (int)((x - leftReal) * scaleFactor);
+        point.y = -(int)((y - topImaginary) * scaleFactor);
     }
 
     /** Converts a point to a number. */
 	private EC point2Complex(Point point){
-        return EC.mkCartesian(LeftReal + (double)point.x / ScaleFactor, TopImaginary - (double)point.y / ScaleFactor);
+		double re=leftReal + (double)point.x / scaleFactor;
+		double im=topImaginary - (double)point.y / scaleFactor;
+        return EC.mkCartesian(re, im);
     }
 
     /** Converts pixel distance in mathematical distance between numbers. */
     private double pix2Math(int i){
-        return (double)i / ScaleFactor;
+        return (double)i / scaleFactor;
     }
 
     /** Converts mathematical distance between numbers in pixel distance. */
     private int math2Pix(double d){
-        return (int)(d * ScaleFactor);
+        return (int)(d * scaleFactor);
     }
 
     /** Real to pixel x-value. */
     private int real2Pix(double d){
-        return (int)((d - LeftReal) * ScaleFactor);
+        return (int)((d - leftReal) * scaleFactor);
     }
 
     /** Imaginary to pixel y-value. */
     private int imag2Pix(double d){
-        return (int)((TopImaginary - d) * ScaleFactor);
+        return (int)((topImaginary - d) * scaleFactor);
     }
 
-    /** Works out axis markers with smooth numbers. */
+    /** Works out axis markers with smooth numbers. 
+     * Raises d just a little bit to be a multiple of 10, of 2.5, 2, or 1. */
     private static double raiseSmooth(double d){
         int i;
         for(i = 0; d < 1.0D; i--)
@@ -390,8 +394,10 @@ final class Plane extends WorldRepresentation{
     /** Draws a complex number. */
 	private void drawComplex(Drawing drawing, EC ec){
         if(ec.isFinite()){
-            drawing.cross((int)((ec.re() - LeftReal) * ScaleFactor), -(int)((ec.im() - TopImaginary) * ScaleFactor), MARKLENGTH);
-            drawing.move(2, 2);
+        	int x=this.real2Pix(ec.re());
+        	int y=this.imag2Pix(ec.im());
+            drawing.cross(x, y, MARKLENGTH);
+            drawing.move(2, 2);//Offset the string a little bit. Should depend on font size.
             drawing.draw(ec.toString());
         }
     }
@@ -417,7 +423,9 @@ final class Plane extends WorldRepresentation{
         }
         if(piclet instanceof Circle){
             Circle circle = (Circle)piclet;
-            drawing.drawCircle((int)((circle.center.re() - LeftReal) * ScaleFactor), -(int)((circle.center.im() - TopImaginary) * ScaleFactor), math2Pix(circle.radius));
+            int x=this.real2Pix(circle.center.re());
+            int y=this.imag2Pix(circle.center.im());
+            drawing.drawCircle(x, y, math2Pix(circle.radius));
             return;
         }
         if(piclet instanceof Rectangle){
@@ -442,23 +450,45 @@ final class Plane extends WorldRepresentation{
 
     /** Draws a line to a number. */
     private void lineTo(Drawing drawing, EC ec){
-        drawing.lineTo((int)((ec.re() - LeftReal) * ScaleFactor), -(int)((ec.im() - TopImaginary) * ScaleFactor));
+    	int x=this.real2Pix(ec.re());
+    	int y=this.imag2Pix(ec.im());
+        drawing.lineTo(x, y);
     }
 
     /** Moves to a number. */
     private void moveTo(Drawing drawing, EC ec){
-        drawing.moveTo((int)((ec.re() - LeftReal) * ScaleFactor), -(int)((ec.im() - TopImaginary) * ScaleFactor));
+    	int x=this.real2Pix(ec.re());
+    	int y=this.imag2Pix(ec.im());
+        drawing.moveTo(x, y);
     }
 
     //Helpers that maintain the state ---------------------------------------------------
     
+    /** Update the extremes so that they include another number. */
     protected void updateExtremes(EC ec){
         if(ec.isFinite()){
-            MaxImaginary = Math.max(MaxImaginary, ec.im());
-            MinImaginary = Math.min(MinImaginary, ec.im());
-            MaxReal = Math.max(MaxReal, ec.re());
-            MinReal = Math.min(MinReal, ec.re());
+            maxImaginary=max(maxImaginary, ec.im());
+            minImaginary=min(minImaginary, ec.im());
+            maxReal=max(maxReal, ec.re());
+            minReal=min(minReal, ec.re());
         }
     }
 
+    /** Like Math.max(double, double), but if one is NaN, returns the other. */
+    private double max(double d, double e){
+    	if(Double.isNaN(d))
+    		return e;
+    	if(Double.isNaN(e))
+    		return d;
+    	return Math.max(d, e);
+    }
+
+    /** Like Math.min(double, double), but if one is NaN, returns the other. */
+    private double min(double d, double e){
+    	if(Double.isNaN(d))
+    		return e;
+    	if(Double.isNaN(e))
+    		return d;
+    	return Math.min(d, e);
+    }
 }

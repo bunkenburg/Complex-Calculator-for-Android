@@ -1,8 +1,5 @@
 Release 1.0:
 
-* BottomImaginary not correct
-* LeftReal not correct
-* display keyboard in landscape: small error
 * display: erase old "=" and result
 
 BUGS:
@@ -20,13 +17,13 @@ DONE:
 * plane: pinch or spread for zooming
 * plane: drag for moving
 * When going into landscape, plane loses displayed numbers.
+* buttons clear and reset in options menu
 
 Release 2.0:
 
 * z -> f(z) mode
 * z -> |f(z)| mode
 * x -> f(z) mode
-* haptic for bad results
+* vibrate for bad results
 * shaking for clear
-* buttons clear and reset in a better place
 * use fragments

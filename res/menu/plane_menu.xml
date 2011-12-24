@@ -18,25 +18,9 @@
  * along with Complex Calculator for Android. If not, see <http://www.gnu.org/licenses/>.
  * */
 -->
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:orientation="vertical"
-	android:id="@+id/top"
->
-
-	<cat.inspiracio.widget.IMEEditText
-		android:id="@+id/display" 
- 		android:layout_height="wrap_content" 
-		android:layout_width="fill_parent" 
-		android:layout_alignParentBottom="true"
-		android:inputType="text|textNoSuggestions|textAutoComplete"
-	/>
-
-	<cat.inspiracio.calculator.Plane
-		android:id="@+id/canvas" 
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent" 
-		android:layout_above="@id/display"
-	/>
-</RelativeLayout>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/reset"
+          android:title="@string/reset" />
+    <item android:id="@+id/clear"
+          android:title="@string/clear" />
+</menu>

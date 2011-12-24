@@ -56,9 +56,10 @@ final class Drawing{
         canvas.drawLine(pen.x + 2, pen.y - 2, pen.x - 2, pen.y + 2, paint);
     }
 
-    void cross(int i, int j, int k){
-        pen.x = i;
-        pen.y = j;
+    /** Draws a cross at (x,y) with width k/2. */
+    final void cross(int x, int y, int k){
+        pen.x = x;
+        pen.y = y;
         canvas.drawLine(pen.x - k, pen.y - k, pen.x + k, pen.y + k, paint);
         canvas.drawLine(pen.x + k, pen.y - k, pen.x - k, pen.y + k, paint);
     }

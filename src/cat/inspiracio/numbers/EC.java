@@ -131,21 +131,22 @@ public final class EC implements Parcelable{
     
     //Constructors -------------------------------------------------
 
-    private EC(boolean flag, double d, double d1){
-        finite = flag;
-        real = d;
-        imag = d1;
+    private EC(boolean flag, double re, double im){
+        finite=flag;
+        real=re;
+        imag=im;
     }
 
-    public static EC mkCartesian(double d, double d1){
-        if(Double.isInfinite(d) || Double.isInfinite(d1))
+    public static EC mkCartesian(double re, double im){
+        if(Double.isInfinite(re) || Double.isInfinite(im))
             return INFINITY;
         else
-            return new EC(true, d, d1);
+            return new EC(true, re, im);
     }
 
     private static EC mkInf(){
-        return new EC(false, (1.0D / 0.0D), (1.0D / 0.0D));
+    	double inf=1.0D / 0.0D;
+        return new EC(false, inf, inf);
     }
 
     public static EC mkPolar(double d, double d1){
@@ -166,6 +167,7 @@ public final class EC implements Parcelable{
         throw new PartialException("EC.acos not implemented.");
     }
 
+    /** Which quadrant does this number lie in? */
     public int quadrant(){
         double d = re();
         double d1 = im();
@@ -188,7 +190,7 @@ public final class EC implements Parcelable{
                 else if(lastQuad == 3 && i == 2)
                     k--;
                 lastQuad = i;
-                return d + (double)(2 * k) * 3.1415926535897931D;
+                return d + (double)(2 * k) * Math.PI;
             } else{
                 return d;
             }
@@ -197,9 +199,7 @@ public final class EC implements Parcelable{
         }
     }
 
-    public EC argument(){
-        return mkReal(arg());
-    }
+    public EC argument(){return mkReal(arg());}
 
     public EC add(EC ec)throws PartialException{
         if(finite)
@@ -255,7 +255,7 @@ public final class EC implements Parcelable{
         return ec;
     }
 
-    public EC divide(double d)throws PartialException{
+    public final EC divide(double d)throws PartialException{
         EC ec = null;
         if(isZero()){
             if(d == 0.0D)
@@ -274,7 +274,7 @@ public final class EC implements Parcelable{
         return ec;
     }
 
-    public EC divide(EC ec)throws PartialException{
+    public final EC divide(EC ec)throws PartialException{
         EC ec1 = null;
         if(isZero()){
             if(ec.isZero())
@@ -304,13 +304,13 @@ public final class EC implements Parcelable{
         return ec1;
     }
 
-    public double distance(EC ec){
+    public final double distance(EC ec){
         if(finite && ec.finite)
             return Math.sqrt(sqr(re() - ec.re()) + sqr(im() - ec.im()));
         return finite != ec.finite ? (1.0D / 0.0D) : 0.0D;
     }
 
-    public boolean equals(EC ec){
+    public final boolean equals(EC ec){
         if(!isFinite() && !ec.isFinite())
             return true;
         if(isFinite() || ec.isFinite())
@@ -318,14 +318,14 @@ public final class EC implements Parcelable{
         return Double.doubleToLongBits(re()) == Double.doubleToLongBits(ec.re()) && Double.doubleToLongBits(im()) == Double.doubleToLongBits(ec.im());
     }
 
-    public EC exp(){
+    public final EC exp(){
         if(finite)
             return mkPolar(Math.exp(re()), im());
         else
             return INFINITY;
     }
 
-    public EC fac()throws PartialException{
+    public final EC fac()throws PartialException{
         long l = longValue();
         if(l >= 0L){
             if(l <= 25L){
@@ -346,18 +346,18 @@ public final class EC implements Parcelable{
 
     public double im(){return imag;}
 
-    public EC imPart(){
+    public final EC imPart(){
         if(finite)
             return mkReal(im());
         else
             return INFINITY;
     }
 
-    private boolean isZero(){
+    private final boolean isZero(){
         return re() == 0.0D && im() == 0.0D;
     }
 
-    public EC ln()throws PartialException{
+    public final EC ln()throws PartialException{
         if(isFinite()){
             if(isZero())
                 throw new PartialException("ln 0");
@@ -380,7 +380,7 @@ public final class EC implements Parcelable{
         }
     }
 
-    public double mod(){
+    public final double mod(){
         double d;
         if(isFinite())
             d = Math.sqrt(sqr(re()) + sqr(im()));
@@ -389,14 +389,14 @@ public final class EC implements Parcelable{
         return d;
     }
 
-    public EC modulus(){
+    public final EC modulus(){
         if(finite)
             return mkReal(mod());
         else
             return INFINITY;
     }
 
-    public EC multiply(EC ec)throws PartialException{
+    public final EC multiply(EC ec)throws PartialException{
         EC ec1;
         if(isZero()){
             if(ec.isFinite())
@@ -418,14 +418,15 @@ public final class EC implements Parcelable{
         return ec1;
     }
 
-    public EC negate(){
+    public final EC negate(){
         if(finite)
             return mkCartesian(-re(), -im());
         else
             return INFINITY;
     }
 
-    public EC opp(){
+    /** Returns the number that is opposite to this one on the Riemann sphere. */
+    public final EC opp(){
         if(!isFinite())
             return ZERO;
         if(isZero())
@@ -437,7 +438,7 @@ public final class EC implements Parcelable{
     /** Raises this number to the power of another, x^y.
      * This is x.
      * @param y */
-    public EC power(EC y)throws PartialException{
+    public final EC power(EC y)throws PartialException{
     	EC x=this;
         if(x.isZero())
         	// 0^0 = undefined
@@ -471,21 +472,21 @@ public final class EC implements Parcelable{
             return INFINITY;
     }
 
-    public double re(){
+    public final double re(){
         if(!finite)
-            return (1.0D / 0.0D);
+            return 1.0D / 0.0D;
         else
             return real;
     }
 
-    public EC rePart(){
+    public final EC rePart(){
         if(finite)
             return mkReal(re());
         else
             return INFINITY;
     }
 
-    public EC reciprocal(){
+    public final EC reciprocal(){
         if(isZero())
             return INFINITY;
         if(!isFinite())
@@ -503,7 +504,7 @@ public final class EC implements Parcelable{
 
     public static void setArgPrincipal(){argContinuous = false;}
 
-    public EC sin()throws PartialException{
+    public final EC sin()throws PartialException{
         EC ec = ZERO;
         if(isFinite())
             try{
@@ -516,7 +517,7 @@ public final class EC implements Parcelable{
         return ec;
     }
 
-    public EC sinh()throws PartialException{
+    public final EC sinh()throws PartialException{
         EC ec = ZERO;
         if(isFinite())
             try{
@@ -530,7 +531,7 @@ public final class EC implements Parcelable{
 
     public static final double sqr(double d){return d * d;}
 
-    public EC sqrt(){
+    public final EC sqrt(){
         if(!isFinite())
             return INFINITY;
         double d = mod();
@@ -550,7 +551,7 @@ public final class EC implements Parcelable{
         return mkCartesian(d1, d2);
     }
 
-    public EC subtract(EC ec)throws PartialException{
+    public final EC subtract(EC ec)throws PartialException{
         if(finite)
             if(ec.isFinite())
                 return mkCartesian(re() - ec.re(), im() - ec.im());
@@ -562,16 +563,16 @@ public final class EC implements Parcelable{
             throw new PartialException(infinityString + "-" + infinityString);
     }
 
-    public EC tan()throws PartialException{
+    public final EC tan()throws PartialException{
         return sin().divide(cos());
     }
 
-    public EC tanh()throws PartialException{
+    public final EC tanh()throws PartialException{
         return sinh().divide(cosh());
     }
 
     /** >Print it nicely. */
-    @Override public String toString(){
+    @Override public final String toString(){
         if(isFinite()){
             double re = re();
             double im = im();

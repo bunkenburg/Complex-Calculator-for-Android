@@ -18,11 +18,10 @@
  * along with Complex Calculator for Android. If not, see <http://www.gnu.org/licenses/>.
  * */
 -->
-
 <cat.inspiracio.calculator.keyboard.CCKeyboardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/keyboard"
         android:layout_alignParentBottom="true"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        />
+/>

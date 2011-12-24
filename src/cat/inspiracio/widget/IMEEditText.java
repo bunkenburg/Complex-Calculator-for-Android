@@ -201,15 +201,18 @@ public class IMEEditText extends EditText{
 	 * */
 	@Override public final boolean onCheckIsTextEditor(){return false;}
 		
-	/** Trying to get BACK key to close the keyboard.
+	/** Listens to BACK: if the keyboard is visible, close it.
+	 * Else delegate to super.
 	 * @see android.widget.TextView#onKeyDown(int, android.view.KeyEvent)
 	 */
 	@Override public final boolean onKeyDown(int keyCode, KeyEvent event){
-	    if(keyCode==KeyEvent.KEYCODE_BACK && event.getRepeatCount()==0){
+		int repeatCount=event.getRepeatCount();
+	    if(keyCode==KeyEvent.KEYCODE_BACK && repeatCount==0 && this.isKeyboardVisible){
 	    	this.hideKeyboard();
 	        return true;
 	    }
-	    return super.onKeyDown(keyCode, event);
+	    boolean b=super.onKeyDown(keyCode, event);
+	    return b;
 	}
 
 	//Helpers -------------------------------------------

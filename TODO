@@ -1,7 +1,7 @@
 Release 1.0:
 
-* icon
 * sign with a real key
+* web up
 
 BUGS:
 
@@ -20,6 +20,7 @@ DONE:
 * When going into landscape, plane loses displayed numbers.
 * buttons clear and reset in options menu
 * about box
+* icon
 
 Release 2.0:
 

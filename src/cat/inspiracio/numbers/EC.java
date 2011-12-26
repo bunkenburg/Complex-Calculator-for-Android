@@ -38,63 +38,62 @@ public final class EC implements Parcelable{
 	//Constants ------------------------------------------------------------
 	
     private static final String piString ="\u03C0";
-    private static final String infinityString ="\u221E";// "inf";
+    private static final String infinityString ="\u221E";
     public static final EC E = mkReal(Math.E);
     public static final EC HALF = mkReal(0.5D);
-    //private static final EC HALFPI = mkReal(Math.PI/2);
+    @SuppressWarnings("unused")
+	private static final EC HALFPI = mkReal(Math.PI/2);//1.5707963267948966
     public static final EC I = mkCartesian(0.0D, 1.0D);
     public static final EC INFINITY = mkInf();
-    //private static final EC MINUSI = mkCartesian(0.0D, -1D);
-    //private static final EC MINUSONE = mkReal(-1D);
-    //private static final EC MINUSTWO = mkReal(-2D);
-    //private static final EC NEGHALF = mkReal(-0.5D);
     private static final EC NEGHALFI = mkCartesian(0.0D, -0.5D);
     public static final EC ONE = mkReal(1.0D);
-    //private static final EC ONEANDHALFPI = mkReal(Math.PI*1.5);
+    @SuppressWarnings("unused")
+	private static final EC ONEANDHALFPI = mkReal(Math.PI*1.5);//4.71238898038469
     public static final EC PI = mkReal(Math.PI);
-    //private static final EC TWO = mkReal(2D);
-    //private static final EC TWOPI = mkReal(Math.PI*2);
+    @SuppressWarnings("unused")
+	private static final EC TWOPI = mkReal(Math.PI*2);//6.283185307179586
     public static final EC ZERO = mkReal(0.0D);
     
     //Static state: affects continuous mapping z -> f(z) and some settings. ------------
 
+    /** In mapping z -> arg(z), give the result closest to the last result,
+     * rather than the principal result. */
     private static boolean argContinuous;
-    private static int k;
-    private static int lastQuad;
-    private static int PRECISION;
-    private static double EPSILON;
-    private static NumberFormat nf;
     
-    static{
-        PRECISION=4;
-        EPSILON=Math.pow(10D, -PRECISION);
-        nf=NumberFormat.getInstance();
-        nf.setGroupingUsed(false);
-        nf.setMaximumFractionDigits(PRECISION);
-    }
-
+    private static int k;
+    
+    /** The last quadrant that a complex number was in. */
+    private static int lastQuad;
+    
+    /** How many digits precision should toString give? */
+    private static int PRECISION=4;
+    
+    /** Real numbers closer than this are considered equal. */
+    private static double EPSILON=Math.pow(10D, -PRECISION);
+    
     //State ----------------------------------------------------------------
 
     /** Is the number finite? */
     private final boolean finite;
     
-    /** Real part of the number */
+    /** Real part of the number. Irrelevant if number is infinite. */
     private final double real;
     
-    /** Imaginary part of the number */
+    /** Imaginary part of the number. Irrelevant if number is infinite. */
     private final double imag;
 
     //Parcelable -------------------------------------------------------------
+    //Serialisation in Android.
     
-    @Override public int describeContents(){return 0;}
-    @Override public void writeToParcel(Parcel p, int flags){
+    @Override public final int describeContents(){return 0;}
+    @Override public final void writeToParcel(Parcel p, int flags){
     	p.writeBooleanArray(new boolean[]{finite});
     	p.writeDouble(real);
     	p.writeDouble(imag);
     }
     public static Parcelable.Creator<EC>CREATOR=new Parcelable.Creator<EC>(){
-    	@Override public EC[]newArray(int size){return new EC[size];}
-    	@Override public EC createFromParcel(Parcel p){
+    	@Override public final EC[]newArray(int size){return new EC[size];}
+    	@Override public final EC createFromParcel(Parcel p){
     		boolean[] bs=new boolean[1];
     		p.readBooleanArray(bs);
     		boolean f=bs[0];
@@ -112,7 +111,6 @@ public final class EC implements Parcelable{
     	int op=PRECISION;
         PRECISION = np;
         EPSILON = Math.pow(10D, -PRECISION);
-        nf.setMaximumFractionDigits(np);
         pcs.firePropertyChange("precision", op, np);
     }
     
@@ -152,8 +150,9 @@ public final class EC implements Parcelable{
     public static EC mkPolar(double d, double d1){
         if(Double.isInfinite(d))
             return INFINITY;
-        else
-            return new EC(true, d * Math.cos(d1), d * Math.sin(d1));
+        double re=d*Math.cos(d1);
+        double im=d*Math.sin(d1);
+        return new EC(true, re, im);
     }
 
     public static EC mkReal(double d){
@@ -163,23 +162,26 @@ public final class EC implements Parcelable{
     //Methods --------------------------------------------------
     
     /** @deprecated No clients */
-    public EC acos()throws PartialException{
+    public final EC acos()throws PartialException{
         throw new PartialException("EC.acos not implemented.");
     }
 
     /** Which quadrant does this number lie in? */
-    public int quadrant(){
-        double d = re();
-        double d1 = im();
-        if(d >= 0.0D && d >= 0.0D)
+    public final int quadrant(){
+        double re = re();
+        double im = im();
+        if(re >= 0.0D && re >= 0.0D)
             return 1;
-        if(d < 0.0D && d1 >= 0.0D)
+        if(re < 0.0D && im >= 0.0D)
             return 2;
-        if(d < 0.0D && d1 < 0.0D)
+        if(re < 0.0D && im < 0.0D)
             return 3;
-        return d < 0.0D || d1 >= 0.0D ? 0 : 4;
+        return re < 0.0D || im >= 0.0D ? 0 : 4;
     }
 
+    /** Argument (=angle) of this number, in radians.
+     * If argContinuous, will return the value closest to the result of the 
+     * previous call. (Assuming there's only one thread.) */
     private double arg(){
         if(isFinite() && !isZero()){
             double d = Math.atan2(im(), re());
@@ -191,17 +193,19 @@ public final class EC implements Parcelable{
                     k--;
                 lastQuad = i;
                 return d + (double)(2 * k) * Math.PI;
-            } else{
+            }else{
                 return d;
             }
-        } else{
+        }else{
             return 0.0D;
         }
     }
 
-    public EC argument(){return mkReal(arg());}
+    /** The argument of this number. */
+    public final EC argument(){return mkReal(arg());}
 
-    public EC add(EC ec)throws PartialException{
+    /** Addition. Infinity+infinity is undefined. */
+    public final EC add(EC ec)throws PartialException{
         if(finite)
             if(ec.isFinite())
                 return mkCartesian(re() + ec.re(), im() + ec.im());
@@ -214,28 +218,25 @@ public final class EC implements Parcelable{
     }
 
     /** @deprecated No clients */
-    public EC asin()throws PartialException{
-        throw new PartialException("EC.asin not implemented");
-    }
+    public final EC asin()throws PartialException{throw new PartialException("EC.asin not implemented");}
 
     /** @deprecated No clients */
-    public EC atan()throws PartialException{
-        throw new PartialException("EC.atan not implemented");
-    }
+    public final EC atan()throws PartialException{throw new PartialException("EC.atan not implemented");}
 
-    public EC conj(){
+    /** Complex conjugate: just negate the imaginary part. */
+    public final EC conj(){
         if(finite)
             return mkCartesian(re(), -im());
-        else
-            return INFINITY;
+        return INFINITY;
     }
 
-    public EC cos()throws PartialException{
+    /** cosine. Not defined for infinity. */
+    public final EC cos()throws PartialException{
         EC ec = null;
         if(isFinite())
             try{
-                EC ec1 = multiply(I);
-                ec = HALF.multiply(ec1.exp().add(ec1.negate().exp()));
+                EC ec1=this.multiply(I);
+                ec=HALF.multiply(ec1.exp().add(ec1.negate().exp()));
             }
             catch(PartialException _ex) { }
         else
@@ -243,7 +244,8 @@ public final class EC implements Parcelable{
         return ec;
     }
 
-    public EC cosh()throws PartialException{
+    /** Hyperbolic cosine. Not defined for infinity. */
+    public final EC cosh()throws PartialException{
         EC ec = ZERO;
         if(isFinite())
             try{
@@ -254,10 +256,15 @@ public final class EC implements Parcelable{
             throw new PartialException("cosh " + infinityString);
         return ec;
     }
-
+    
+    /** Division by a real number. 
+     * Not defined:
+     * 	0/0
+     * 	infinity/0
+     * */
     public final EC divide(double d)throws PartialException{
         EC ec = null;
-        if(isZero()){
+        if(this.isZero()){
             if(d == 0.0D)
                 throw new PartialException("0/0");
             ec = ZERO;
@@ -274,6 +281,13 @@ public final class EC implements Parcelable{
         return ec;
     }
 
+    /** Division by complex number. 
+     * Not defined:
+     * 	0/0
+     * 	0/infinity
+     * 	infinity/0
+     * 	infinity/infinity
+     * */
     public final EC divide(EC ec)throws PartialException{
         EC ec1 = null;
         if(isZero()){
@@ -304,12 +318,16 @@ public final class EC implements Parcelable{
         return ec1;
     }
 
+    /** Distance between two numbers. */
     public final double distance(EC ec){
         if(finite && ec.finite)
             return Math.sqrt(sqr(re() - ec.re()) + sqr(im() - ec.im()));
-        return finite != ec.finite ? (1.0D / 0.0D) : 0.0D;
+        double inf=1.0/0.0;
+        return finite!=ec.finite ? inf : 0.0D;
     }
 
+    /** Are two numbers exactly equal? 
+     * (Not just to within EPSILON.) */
     public final boolean equals(EC ec){
         if(!isFinite() && !ec.isFinite())
             return true;
@@ -318,84 +336,89 @@ public final class EC implements Parcelable{
         return Double.doubleToLongBits(re()) == Double.doubleToLongBits(ec.re()) && Double.doubleToLongBits(im()) == Double.doubleToLongBits(ec.im());
     }
 
+    /** Exponential function. */
     public final EC exp(){
         if(finite)
             return mkPolar(Math.exp(re()), im());
-        else
-            return INFINITY;
+        return INFINITY;
     }
 
+    /** Factorial function. 
+     * Defined only for naturals up to 25. */
     public final EC fac()throws PartialException{
-        long l = longValue();
-        if(l >= 0L){
-            if(l <= 25L){
-                long l1 = 1L;
-                for(; l > 0L; l--)
-                    l1 *= l;
-                return mkReal(l1);
-            } else{
-                throw new PartialException(l+"!");
-            }
-        } else{
-            throw new PartialException("(" + l + ")!");
-        }
+        long n=this.longValue();
+        if(n<0)
+        	throw new PartialException("(" + n + ")!");
+        if(25<n)
+        	throw new PartialException(n + "!");
+        //Normal calculation
+        long factorial = 1L;
+        for(; n > 0L; n--)
+        	factorial *= n;
+        return mkReal(factorial);
     }
 
     /** Is the number finite? */
     public final boolean isFinite(){return finite;}
 
-    public double im(){return imag;}
+    /** Imaginary part. */
+    public final double im(){return imag;}
 
+    /** Imaginary part as EC. */
     public final EC imPart(){
         if(finite)
             return mkReal(im());
-        else
-            return INFINITY;
+        return INFINITY;
     }
 
-    private final boolean isZero(){
-        return re() == 0.0D && im() == 0.0D;
-    }
+    /** Is this number exactly zero? */
+    private final boolean isZero(){return finite && re() == 0.0D && im() == 0.0D;}
 
+    /** Natural logarithm.
+     * Undefined for 0. */
     public final EC ln()throws PartialException{
         if(isFinite()){
             if(isZero())
                 throw new PartialException("ln 0");
-            else
-                return mkCartesian(Math.log(mod()), arg());
-        } else{
+            return mkCartesian(Math.log(mod()), arg());
+        } else
             return INFINITY;
-        }
     }
 
+    /** Try to cast to a long. 
+     * The imaginary part must be smaller than EPSILON
+     * and the real part must be within EPSILON of a long number. */
     private long longValue()throws PartialException{
         if(Math.abs(im()) < EPSILON){
             long l = Math.round(re());
             if(Math.abs(re() - (double)l) < EPSILON)
                 return l;
-            else
-                throw new PartialException(this + " not integer");
-        } else{
+            throw new PartialException(this + " not integer");
+        } else
             throw new PartialException(this + " not real");
-        }
     }
 
+    /** Modulus: the distance to zero. */
     public final double mod(){
         double d;
         if(isFinite())
             d = Math.sqrt(sqr(re()) + sqr(im()));
         else
-            d = (1.0D / 0.0D);
+            d = 1.0D / 0.0D;//infinity
         return d;
     }
 
+    /** Modulus: the distance to zero. */
     public final EC modulus(){
         if(finite)
             return mkReal(mod());
-        else
-            return INFINITY;
+        return INFINITY;
     }
 
+    /** Multiplication. 
+     * Undefined:
+     * 	0*infinity 
+     * 	infinity*0. */
     public final EC multiply(EC ec)throws PartialException{
         EC ec1;
         if(isZero()){
@@ -421,8 +444,7 @@ public final class EC implements Parcelable{
     public final EC negate(){
         if(finite)
             return mkCartesian(-re(), -im());
-        else
-            return INFINITY;
+        return INFINITY;
     }
 
     /** Returns the number that is opposite to this one on the Riemann sphere. */
@@ -431,13 +453,15 @@ public final class EC implements Parcelable{
             return ZERO;
         if(isZero())
             return INFINITY;
-        else
-            return mkPolar(1.0D / mod(), arg() + Math.PI);
+        return mkPolar(1.0D / mod(), arg() + Math.PI);//the usual case
     }
 
     /** Raises this number to the power of another, x^y.
      * This is x.
-     * @param y */
+     * Undefined:
+     * 	0^0
+     * 	infinity^0
+     * */
     public final EC power(EC y)throws PartialException{
     	EC x=this;
         if(x.isZero())
@@ -472,38 +496,44 @@ public final class EC implements Parcelable{
             return INFINITY;
     }
 
+    /** The real part of this number, as double. */
     public final double re(){
         if(!finite)
-            return 1.0D / 0.0D;
-        else
-            return real;
+            return 1.0D / 0.0D;//infinity
+        return real;
     }
 
+    /** The real part of this number, as EC. */
     public final EC rePart(){
         if(finite)
             return mkReal(re());
-        else
-            return INFINITY;
+        return INFINITY;
     }
 
+    /** The reciprocal: 1/z. */
     public final EC reciprocal(){
         if(isZero())
             return INFINITY;
         if(!isFinite())
             return ZERO;
         else
-            return mkPolar(1.0D / mod(), arg() + Math.PI);
+            return mkPolar(1.0D / mod(), arg() + Math.PI);//usual case
     }
 
+    /** Forget the last quadrant result. */
     public static void resetArg(){
-        lastQuad = 0;
-        k = 0;
+        lastQuad=0;
+        k=0;
     }
 
-    public static void setArgContinuous(){argContinuous = true;}
+    /** The argument function should be continuous. */
+    public static void setArgContinuous(){argContinuous=true;}
+    
+    /** The argument function should give principal values. */
+    public static void setArgPrincipal(){argContinuous=false;}
 
-    public static void setArgPrincipal(){argContinuous = false;}
-
+    /** sin.
+     * Undefined sin(infinity). */
     public final EC sin()throws PartialException{
         EC ec = ZERO;
         if(isFinite())
@@ -517,6 +547,8 @@ public final class EC implements Parcelable{
         return ec;
     }
 
+    /** Hyperbolic sin function.
+     * Undefined sinh(infinity). */
     public final EC sinh()throws PartialException{
         EC ec = ZERO;
         if(isFinite())
@@ -529,21 +561,23 @@ public final class EC implements Parcelable{
         return ec;
     }
 
-    public static final double sqr(double d){return d * d;}
+    /** Square of real number. */
+    public static final double sqr(double d){return d*d;}
 
+    /** Square root. */
     public final EC sqrt(){
         if(!isFinite())
             return INFINITY;
-        double d = mod();
+        double modulus=mod();
         double d1;
         double d2;
-        if(d == 0.0D)
-            d1 = d2 = d;
+        if(modulus==0.0D)
+            d1 = d2 = modulus;
         else if(re() > 0.0D){
-            d1 = Math.sqrt(0.5D * (d + re()));
+            d1 = Math.sqrt(0.5D * (modulus + re()));
             d2 = im() / d1 / 2D;
-        } else{
-            d2 = Math.sqrt(0.5D * (d - re()));
+        }else{
+            d2 = Math.sqrt(0.5D * (modulus - re()));
             if(im() < 0.0D)
                 d2 = -d2;
             d1 = im() / d2 / 2D;
@@ -551,6 +585,8 @@ public final class EC implements Parcelable{
         return mkCartesian(d1, d2);
     }
 
+    /** Subtraction. 
+     * Undefined: infinity-infinity. */
     public final EC subtract(EC ec)throws PartialException{
         if(finite)
             if(ec.isFinite())
@@ -559,55 +595,71 @@ public final class EC implements Parcelable{
                 return INFINITY;
         if(ec.isFinite())
             return INFINITY;
-        else
-            throw new PartialException(infinityString + "-" + infinityString);
+        throw new PartialException(infinityString + "-" + infinityString);
     }
 
-    public final EC tan()throws PartialException{
-        return sin().divide(cos());
-    }
+    /** tan */
+    public final EC tan()throws PartialException{return sin().divide(cos());}
 
-    public final EC tanh()throws PartialException{
-        return sinh().divide(cosh());
-    }
+    /** Hyperbolic tan function. */
+    public final EC tanh()throws PartialException{return sinh().divide(cosh());}
 
-    /** >Print it nicely. */
+    /** Print it nicely. 
+     * The user sees output of this function. 
+     * Rounds using EPSILON to good short results. */
     @Override public final String toString(){
-        if(isFinite()){
-            double re = re();
-            double im = im();
-            String s = toString(re);
+    	if(!isFinite())
+    		return infinityString;
+    	double re = re();
+    	double im = im();
+    	String s = toString(re);
 
-            //It's just a real number.
-            if(Math.abs(im) < EPSILON)
-                return s;
-            
-            String s1;
-            if(Math.abs(im - 1.0D) < EPSILON)
-                s1 = "i";
-            else if(Math.abs(im + 1.0D) < EPSILON)
-                s1 = "-i";
-            else
-                s1 = toString(im) + "i";
-            
-            if(Math.abs(re) < EPSILON)
-                return s1;
-            else
-                return s + (im <= 0.0D ? "" : "+") + s1;
-        }else
-            return infinityString;
+    	//It's just a real number.
+    	if(Math.abs(im) < EPSILON)
+    		return s;
+
+    	String s1;
+    	if(Math.abs(im - 1.0D) < EPSILON)
+    		s1 = "i";
+    	else if(Math.abs(im + 1.0D) < EPSILON)
+    		s1 = "-i";
+    	else
+    		s1 = toString(im) + "i";
+
+    	if(Math.abs(re) < EPSILON)
+    		return s1;
+    	else
+    		return s + (im <= 0.0D ? "" : "+") + s1;
     }
 
-    /** Print a real number nicely. */
+    /** Print a real number nicely, for the user.
+     * Prefers rounded numbers and multiples of pi. */
     public static String toString(double d){
-    	//Some special real numbers
-    	if(Math.abs(d-Math.PI)<EPSILON)
-    		return piString;
-    	if(Math.abs(d+Math.PI)<EPSILON)
-    		return "-" + piString;
+    	if(Double.isNaN(d))
+    		return Double.toString(d);//Whatever that gives.
+    	if(Double.isInfinite(d))
+    		return infinityString;
     	
+    	//Detect multiples of pi. Having beautiful displays like 2pi is very educational.
+    	long n=Math.round(d/Math.PI);//rounding
+    	double reconstruct=n*Math.PI;
+    	double distance=Math.abs(d-reconstruct);
+    	if(distance<EPSILON){
+    		if(n==0)
+    			return "0";
+    		if(n==1)
+    			return piString;
+    		if(n==-1)
+    			return "-" + piString;
+    		return n + piString;
+    	}
+    	    	
     	//General formatting
+        NumberFormat nf=NumberFormat.getInstance();//Instantiate every time, because not threadsafe.
+        nf.setGroupingUsed(false);
+        nf.setMaximumFractionDigits(PRECISION);
         String s = nf.format(d);
+        //Cut off trailing zeros.
         if(SyntaxTree.in('.', s)){
         	//Cuts off trailing zeros.
             StringBuffer b=new StringBuffer(s);
@@ -617,8 +669,8 @@ public final class EC implements Parcelable{
             if(b.charAt(b.length() - 1) == '.')
                 b.setLength(b.length() - 1);
             return b.toString();
-        } else
-            return s;
+        }
+        return s;
     }
 
 }

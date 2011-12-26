@@ -24,9 +24,16 @@ import static android.view.KeyEvent.KEYCODE_EQUALS;
 import java.text.ParseException;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +43,7 @@ import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import cat.inspiracio.numbers.BugException;
 import cat.inspiracio.numbers.EC;
@@ -130,19 +138,47 @@ public final class ComplexWorld extends Activity{
         case R.id.clear:
             this.world.clear();
             return true;
+        case R.id.about:
+            this.showDialog(DIALOG_ABOUT);
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
     
+    private static final int DIALOG_ABOUT=0;
+    
+    @Override protected Dialog onCreateDialog(int id) {
+        switch(id) {
+        case DIALOG_ABOUT:
+        	Context context=this;
+        	final TextView message=new TextView(context);
+        	final SpannableString s=new SpannableString(context.getText(R.string.dialog_message));
+        	Linkify.addLinks(s, Linkify.ALL);
+        	message.setText(s);
+        	message.setMovementMethod(LinkMovementMethod.getInstance());
+        	message.setTextColor(Color.BLACK);
+
+        	AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        	builder.setIcon(R.drawable.icon);//Shown before title
+        	builder.setTitle(R.string.dialog_title);
+        	builder.setView(message);
+        	builder.setCancelable(true);
+        	builder.setInverseBackgroundForced(true);
+        	builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener(){
+        		@Override public void onClick(DialogInterface dialog, int id){dialog.dismiss();}
+        	});
+        	Dialog dialog=builder.create();
+        	return dialog;
+        }
+        return null;
+    }
     /** If the user presses BACK:
      * If keyboard is visible, close it. IMEEditText handles that.
      * If keyboard is not visible, close CC.
 	 * @see android.app.Activity#onBackPressed()
 	 */
-	@Override public void onBackPressed(){
-		this.finish();
-	}
+	@Override public void onBackPressed(){this.finish();}
 
 	/** Writes the state to bundle. */
 	@Override protected final void onSaveInstanceState(Bundle bundle){

@@ -1,6 +1,7 @@
 Release 1.0:
 
-* display: erase old "=" and result
+* icon
+* sign with a real key
 
 BUGS:
 
@@ -18,6 +19,7 @@ DONE:
 * plane: drag for moving
 * When going into landscape, plane loses displayed numbers.
 * buttons clear and reset in options menu
+* about box
 
 Release 2.0:
 
@@ -27,3 +29,4 @@ Release 2.0:
 * vibrate for bad results
 * shaking for clear
 * use fragments
+* display: erase old "=" and result

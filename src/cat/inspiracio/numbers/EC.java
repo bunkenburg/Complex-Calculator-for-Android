@@ -66,11 +66,11 @@ public final class EC implements Parcelable{
     private static NumberFormat nf;
     
     static{
-        PRECISION = 4;
-        EPSILON = Math.pow(10D, -PRECISION);
-        nf = NumberFormat.getInstance();
+        PRECISION=4;
+        EPSILON=Math.pow(10D, -PRECISION);
+        nf=NumberFormat.getInstance();
         nf.setGroupingUsed(false);
-        nf.setMaximumFractionDigits(10);
+        nf.setMaximumFractionDigits(PRECISION);
     }
 
     //State ----------------------------------------------------------------

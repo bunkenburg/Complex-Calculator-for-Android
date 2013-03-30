@@ -5,11 +5,10 @@ Release 1.0:
 
 BUGS:
 
+* I can't draw a filled triangle. Axes of plane.
 
 TODO:
 
-* I can't draw a filled triangle. Axes of plane.
-* Display numbers with fewer digits.
 
 DONE:
 
@@ -20,6 +19,7 @@ DONE:
 * When going into landscape, plane loses displayed numbers.
 * buttons clear and reset in options menu
 * about box
+* Display numbers with fewer digits.
 * icon
 
 Release 2.0:
@@ -27,7 +27,4 @@ Release 2.0:
 * z -> f(z) mode
 * z -> |f(z)| mode
 * x -> f(z) mode
-* vibrate for bad results
-* shaking for clear
 * use fragments
-* display: erase old "=" and result

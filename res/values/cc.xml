@@ -19,7 +19,8 @@
  * */
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-	<string name="about">About</string>
+    <string name="app_name">Complex Calculator</string>
+    <string name="about">About</string>
 	<string name="reset">Reset</string>
 	<string name="clear">Clear</string>
 	<string name="ok">Ok</string>
